@@ -1,0 +1,107 @@
+{
+  "stage": "COMPLETE",
+  "gates": [
+    {
+      "gate": "TRIAGE_THESIS_CONFIRM",
+      "result": "confirmed",
+      "thesis_confidence": "MEDIUM"
+    },
+    {
+      "gate": "APPROVAL",
+      "result": "approved",
+      "revision_cycles": 0,
+      "conflict_decisions_file": "conflict_decisions.json"
+    }
+  ],
+  "telemetry": {
+    "revision_cycles": {},
+    "kc_events": [
+      {
+        "check": "KC-3",
+        "result": "PASS",
+        "detail": "max single-source share 10%"
+      },
+      {
+        "check": "KC-6",
+        "result": "PASS",
+        "detail": "0/7 vectors INSUFFICIENT"
+      }
+    ],
+    "gate_expedite_count": 0,
+    "consecutive_blocked_audits": 0,
+    "tool_degradation": [
+      "code_execution: false (matplotlib not installed) \u2014 VIZ candidates will be placeholder-only"
+    ]
+  },
+  "phase_1_complete": true,
+  "postdraft": {
+    "red_team": {
+      "threat_level": "MEDIUM",
+      "decision": "address",
+      "revised_section": "A Divided Future / What Should Enterprises Actually Do?"
+    },
+    "reader_simulation": {
+      "accessibility_rating": "MOSTLY ACCESSIBLE",
+      "high_gaps": 3,
+      "decision": "polish",
+      "sections_revised": [
+        "The Qwen3.8-Max Moment",
+        "Are Qwen3.8-Max's Benchmarks Genuinely Competitive?",
+        "Can China's Chips Catch Up to Nvidia?"
+      ]
+    }
+  },
+  "draft": {
+    "sections_drafted": 8,
+    "consecutive_blocked_audits": 0,
+    "inline_audit_verdicts": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS_WITH_NOTES",
+      "PASS",
+      "PASS"
+    ],
+    "holistic_audit_verdict": "PASS",
+    "word_count": 2291
+  },
+  "delivery": {
+    "author_byline_decision": "deliver_without \u2014 E-E-A-T gap left for publisher to resolve",
+    "delivered_artifacts": [
+      "article_draft.md",
+      "seo_package.md",
+      "pipeline_metadata.md"
+    ]
+  },
+  "learning": {
+    "pipeline_learnings_entries": 4,
+    "knowledge_artifacts_written": [
+      ".agents/knowledge/article-pipeline/pitfall/article_20260803T000000Z.md",
+      ".agents/knowledge/article-pipeline/context/article_20260803T000000Z.md"
+    ],
+    "trace_id": "CCUK5X"
+  },
+  "artifacts_written": [
+    "pipeline_config.json",
+    "advocate_context.md",
+    "skeptic_evidence.md",
+    "research_context.md",
+    "article_spec.md",
+    "conflict_register.md",
+    "research_context_summary.md",
+    "fact_check_report.md",
+    "dispute_register.md",
+    "claims_for_drafting.md",
+    "conflict_decisions.json",
+    "pipeline_metadata.md",
+    "article_draft.md",
+    "audit_log.md",
+    "audit_report.md",
+    "red_team_report.md",
+    "reader_questions.md",
+    "seo_package.md",
+    "pipeline_learnings.md"
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-04T11:48:12.825316+00:00",
+  "producer": "write_artifact_manifest.py",
+  "trace_id": "CCUK5X",
+  "artifacts": {
+    "advocate_context.md": {
+      "sha256": "4cb1adc592bfd3a87b40b667d9a3591a6db75e6d4bf9a097433520fa4522a329",
+      "bytes": 12571
+    },
+    "article_draft.md": {
+      "sha256": "d835d74924578eaf7172b656898aea47ddcfdacad4ba03c270df914f4adafb68",
+      "bytes": 16136
+    },
+    "article_spec.md": {
+      "sha256": "86cd11b3bb69953774a61112e05704f1ab100ebccfea5fd330266c96267cef7c",
+      "bytes": 7157
+    },
+    "audit_log.md": {
+      "sha256": "007892d320d23535c1279b0a4e44c09ddb1c50c856f1c42f42f8bf16b7d8af56",
+      "bytes": 2822
+    },
+    "audit_report.md": {
+      "sha256": "ea4debb568513b7a121f0451cd774611b92f92b518648727dd5bf78588679e8e",
+      "bytes": 3389
+    },
+    "claims_for_drafting.md": {
+      "sha256": "125880721a9f347e1549383b699451b609603545c6e11891308c878e1a499107",
+      "bytes": 12267
+    },
+    "conflict_decisions.json": {
+      "sha256": "e64e892deadf14337eda60b7c3b029fb2adc2430168bb16e207b4a937b69ca97",
+      "bytes": 830
+    },
+    "conflict_register.md": {
+      "sha256": "e6cb0462deb274b8fdb7ec13f4a7f3c6d27ed405604779c75b5717dad9996f58",
+      "bytes": 3773
+    },
+    "dispute_register.md": {
+      "sha256": "45257bbd262726f1e03d24f9fd63891207a4ba4d4549e436f61234edf5ea1dc7",
+      "bytes": 919
+    },
+    "fact_check_report.md": {
+      "sha256": "bae2f8c6ce95366950a8eebbc9d6b05d3281978b444e2449b30cc0992fae5535",
+      "bytes": 8964
+    },
+    "pipeline_config.json": {
+      "sha256": "cbcab6ef6aa3c59511773ad7cbc703a8daea169d795e9a77d4da799bc4040f02",
+      "bytes": 2072
+    },
+    "pipeline_learnings.md": {
+      "sha256": "6b8680338557eebddb70d26fb9411d9449104c256792ffa67710475c673f248d",
+      "bytes": 2688
+    },
+    "pipeline_metadata.md": {
+      "sha256": "cd078c22f57d72a5c502530a7e8d4eae7293681e1f62359ac3227395d1ce2147",
+      "bytes": 2754
+    },
+    "pipeline_state.json": {
+      "sha256": "b66541bba2617ebd79d41f767ecfbf5a5d15ae489fff8c6626bec47c40279f4e",
+      "bytes": 2822
+    },
+    "reader_questions.md": {
+      "sha256": "5762706607c9b4850cb6acf4ae14e4e306013798aa1ba40a514af0c86ae4e921",
+      "bytes": 5252
+    },
+    "red_team_report.md": {
+      "sha256": "adc86db65bdfaaecceb95e72e452088890aba9f0db4baa2dc72d2b32d87a005c",
+      "bytes": 5391
+    },
+    "research_context.md": {
+      "sha256": "64682b287da626955071ae01c9a9444bd147d1a152a3b7346bcacca06ee2bd7d",
+      "bytes": 11030
+    },
+    "research_context_summary.md": {
+      "sha256": "31aea546bb3274ca3274f824854801d05ed6cee035ed3d573091331444199e73",
+      "bytes": 3558
+    },
+    "seo_package.md": {
+      "sha256": "c71a9d9b091f2f2f991d3f57fd5164825a431a8d56df7f9932f4347c14ac28af",
+      "bytes": 8250
+    },
+    "skeptic_evidence.md": {
+      "sha256": "9a9704418c18b610d774fceacff96b6e27172057ab057652e8ed6a89f74c3ec1",
+      "bytes": 18574
+    }
+  }
+}

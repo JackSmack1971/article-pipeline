@@ -1,0 +1,33 @@
+{
+  "pipeline": {
+    "depth": "COMPLEX",
+    "adversarial_dialectic": true,
+    "red_team": true,
+    "fact_check": true,
+    "seo_pass": true,
+    "token_budget": 48000,
+    "draft_in_phases": true,
+    "tool_availability": {
+      "code_execution": false,
+      "web_search": true
+    },
+    "topic_brief": "The rapid advancement of highly capable, cost-effective Chinese open-source AI models like Alibaba's Qwen 3.8 Max is challenging the dominance of closed-source US models while presenting complex geopolitical risks and strategic choices for Western enterprises.",
+    "thesis": "Although US closed-source labs still hold a massive compute and parameter-size advantage, Chinese frontier-grade open-source models are offering competitive benchmarks at a fraction of the cost, providing enterprises with valuable architectural flexibility and freedom from platform lock-in. However, this shift creates a profound tension: while these open-source releases pressure US giants and democratize access, they also risk making Western infrastructure deeply dependent on Chinese technology, potentially linking software design with optimized foreign hardware and escalating geopolitical vulnerabilities. Ultimately, this dynamic leaves the future of AI divided between the commoditizing force of powerful open-source alternatives and the sheer scaling velocity of heavily resourced, recursively self-improving closed systems.",
+    "thesis_confidence": "MEDIUM",
+    "novelty_score": 5,
+    "contentiousness_score": 5,
+    "scope_score": 4,
+    "composite_score": 4.75,
+    "budget_adjusted": false,
+    "budget_adjustment_reason": null,
+    "routed_at": "2026-08-03T00:00:00Z",
+    "brief_flags": [
+      {
+        "phrase": "Alibaba's Qwen 3.8 Max",
+        "risk": "named-entity-unverified",
+        "recommendation": "verify at research gate",
+        "note": "Specific model name/version cannot be confirmed from training data; treat as a research vector requiring live-source verification of exact model name, release date, and benchmark claims."
+      }
+    ]
+  }
+}

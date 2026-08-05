@@ -1,0 +1,28 @@
+{
+  "gate": "APPROVAL",
+  "decided_at": "2026-08-03T00:00:00Z",
+  "decision": "approved",
+  "conflicts": [
+    {
+      "id": "C-1",
+      "vector": "Cost Economics",
+      "handling": "neutral",
+      "position": null,
+      "note": "Present API price advantage as corroborated, immediately scoped by self-hosting TCO caveat."
+    },
+    {
+      "id": "C-2",
+      "vector": "Enterprise Risk vs. Architectural Flexibility",
+      "handling": "neutral",
+      "position": null,
+      "note": "Article's central tension. Present both; do not resolve in the article's voice."
+    },
+    {
+      "id": "C-3",
+      "vector": "Scope of Commoditization",
+      "handling": "neutral",
+      "position": null,
+      "note": "Preserve as the article's open concluding question, matching thesis's own 'divided future' framing."
+    }
+  ]
+}
