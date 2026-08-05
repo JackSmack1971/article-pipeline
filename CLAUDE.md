@@ -120,6 +120,12 @@ For repository code changes, run:
 
     python3 -m unittest discover -s tests -p 'test_*.py'
 
+For control-plane evaluator changes, also validate the experiment harness without spending model budget:
+
+    python3 scripts/evals/qpr_runner.py --baseline-ref main --candidate-ref HEAD --dry-run
+
+A full QPR comparison is evidence for a behavioral control-plane claim only when the experiment contract, corpus, thresholds, model/effort, budgets, and evaluator version were frozen before the candidate results were seen.
+
 When the current `.agents/artifacts/` run is relevant to the change, also run:
 
     python3 scripts/validate_artifacts.py --artifact-root .agents/artifacts --json
