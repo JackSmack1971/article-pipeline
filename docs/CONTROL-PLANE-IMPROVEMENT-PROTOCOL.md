@@ -2,230 +2,238 @@
 
 ## Purpose
 
-This protocol governs changes intended to improve the Claude Code orchestration control plane.
+This protocol governs changes intended to improve the Claude Code control plane that produces researched, fact-checked, publication-ready long-form articles in this repository.
 
-Its purpose is not to make the control plane more elaborate. Its purpose is to make the system measurably better at completing real engineering work while preserving required guarantees.
+The optimization target is the **article pipeline as a product**: topic brief and thesis routing, research, adversarial evidence collection, fact checking, human conflict decisions, drafting, QA, post-draft challenge, reader simulation, SEO packaging, persisted artifacts, and cross-run learning.
 
-A control-plane change is justified only when it improves an observable property, removes unnecessary machinery without meaningful regression, or closes a demonstrated correctness, safety, evidence, or efficiency gap.
+The goal is not more orchestration. The goal is a higher rate of articles that are:
+
+- factually sound and correctly cited;
+- appropriately calibrated to uncertainty and conflicting evidence;
+- coherent, useful, and accessible to the declared audience;
+- structurally publishable under the repository artifact contract;
+- produced with less unnecessary cost, context, latency, rework, and human rescue.
 
 The default outcome of an inconclusive experiment is **no change**.
 
+## Product model
+
+The current control plane is intentionally hybrid:
+
+- the main Claude session owns end-to-end orchestration and artifact handoffs;
+- `pipeline_config.json` routes SIMPLE, STANDARD, or COMPLEX depth;
+- advocate and skeptic are isolated research subagents because independence is part of the epistemic design;
+- the red-team subagent receives only thesis plus conclusion to reduce anchoring;
+- fact-check, drafting/QA, reader simulation, and SEO are stage-specific judgment procedures;
+- `scripts/pipeline_runner.py` owns deterministic state mutation and finalization;
+- `scripts/validate_artifacts.py` checks the persisted artifact contract and configured publication blockers;
+- `.agents/artifacts/` is live article-run state;
+- `.agents/knowledge/article-pipeline/` is cross-run product learning.
+
+Do not collapse these into one generic "agent success" metric.
+
+A `PUBLISHABLE` validator result proves the persisted artifact contract is acceptable under the current deterministic checks. It does **not** independently prove that the article is accurate, well sourced, balanced, clear, or better than a baseline article. Article quality requires independent graders.
+
 ## Scope
 
-Use this protocol when changing or evaluating any mechanism that can materially affect Claude Code behavior, including:
+Use this protocol when changing or evaluating anything that can materially affect the article pipeline, including:
 
-- `CLAUDE.md` and scoped rules;
-- skills and custom commands;
-- subagent definitions, delegation policy, models, effort, or tool capabilities;
-- hooks, permissions, sandboxing, or protected-path policy;
-- workflow states, transitions, evidence rules, schemas, or templates;
-- `scripts/workflow.py` or other deterministic orchestration logic;
-- context-management, memory, compaction, or handoff mechanisms;
-- verification, audit, completion, or stale-evidence behavior;
-- benchmark or evaluation infrastructure;
-- adoption, replacement, or removal of native Claude Code features;
-- orchestration complexity, including adding or deleting agents, states, hooks, rules, or abstraction layers.
+- `CLAUDE.md` or other always-loaded project instructions;
+- article skills, references, triggers, rubrics, or handoff contracts;
+- article subagent definitions, delegation payloads, models, effort, or tool capabilities;
+- SIMPLE/STANDARD/COMPLEX routing;
+- research, synthesis, fact-check, drafting/QA, red-team, reader, SEO, or learning behavior;
+- approval gates and persisted conflict decisions;
+- runner, validator, artifact-contract, manifest, counter, schema, or state behavior;
+- summarization, context management, memory, compaction, or cross-run learning;
+- benchmark and article-quality evaluation infrastructure;
+- adoption, replacement, ablation, or removal of native/custom orchestration machinery.
 
-Ordinary product or repository changes are governed by the normal workflow. This protocol applies when the control plane itself is the experimental object.
+Ordinary article generation follows `.claude/skills/multi-agent-article-pipeline/SKILL.md`. This protocol applies when the pipeline itself is the experimental object.
 
-## Core principle
+## Core rule
 
-Treat every control-plane modification as a falsifiable experiment.
+Treat every behavior-changing control-plane modification as a falsifiable experiment.
 
 Before implementation, state:
 
 1. the concrete failure mode or wasted resource;
-2. the causal hypothesis for why it occurs;
-3. the smallest candidate intervention expected to change it;
-4. the observable primary metric;
+2. the causal hypothesis;
+3. the smallest credible intervention;
+4. the primary observable metric;
 5. the minimum improvement worth keeping;
-6. the guarantees that must not regress;
-7. the evaluation method that can disprove the hypothesis.
+6. the hard guardrails that must not regress;
+7. the evaluation method capable of disproving the hypothesis.
 
-Do not retain a change because it appears cleaner, more advanced, more agentic, more deterministic, or more elegant. Retain it because evidence demonstrates net value.
+Do not retain a change because it looks cleaner, more advanced, more agentic, or more deterministic. Retain it because evidence demonstrates net product value.
 
-## Authority and enforcement
+## Enforcement model
 
 Prompt instructions are guidance. Executable controls are enforcement.
 
-When a property must hold regardless of model judgment, prefer a deterministic mechanism such as:
+When a property must hold regardless of model judgment, prefer the strongest appropriate mechanism:
 
-- permission rules;
-- hooks;
-- restricted tool capabilities;
-- sandboxing or worktree isolation;
-- schemas;
-- deterministic workflow transitions;
-- tests or external graders.
+- restricted subagent capabilities for information boundaries;
+- deterministic runner logic for state and counters;
+- schemas and manifest validation for persisted artifacts;
+- explicit gate artifacts for human decisions;
+- tests for objective behavior;
+- independent graders for final article outcomes.
 
-Do not claim that a behavior is enforced merely because it appears in prose, agent instructions, configuration, or documentation.
+Do not claim a behavior is enforced merely because it appears in prose, frontmatter, or documentation. Inspect the executable or capability path and realistic bypasses.
 
-Test the actual executable path and realistic bypass paths.
+## Product metrics
 
-## Improvement objectives
+### Qualified publish rate
 
-Control-plane improvements may target one or more of the following dimensions.
+For broad end-to-end changes, the default primary metric is **qualified publish rate (QPR)**:
 
-### Correctness
+> QPR = proportion of runs that (a) satisfy the deterministic publishable artifact contract, (b) pass predeclared independent factual/citation guardrails, (c) meet the predeclared editorial/audience threshold, and (d) require no undeclared human rescue.
 
-- task success;
-- implementation correctness;
-- adherence to explicit requirements;
-- correct workflow-state transitions;
-- accurate evidence association;
-- absence of false completion.
+Freeze the exact thresholds before candidate results are seen.
 
-### Reliability
+`PUBLISHABLE` alone is not QPR.
 
-- success rate across repeated trials;
-- lower variance across trials;
-- fewer retries or recoveries;
-- robust behavior under alternate valid task paths;
-- robust behavior after context pressure or session boundaries.
+### Epistemic metrics
 
-### Safety and integrity
+Useful subsystem metrics include:
 
-- resistance to bypass;
-- preservation of permission and protected-path boundaries;
-- correct rejection of invalid transitions;
-- stale-evidence invalidation;
-- grader and benchmark integrity;
-- failure visibility rather than concealment.
+- material factual-claim precision;
+- unsupported-claim rate;
+- citation correctness and source-support rate;
+- dead, mismatched, or fabricated citation rate;
+- VERIFIED-UPDATED adoption rate;
+- unqualified MEDIUM/LOW claim rate;
+- DISPUTED/OUTDATED leakage into settled prose;
+- source diversity and concentration;
+- conflict-decision fidelity;
+- advocate/skeptic evidence overlap and diversity.
 
-### Efficiency
+### Editorial and audience metrics
 
-- total cost;
-- input and output tokens;
-- always-loaded context;
-- tool calls;
-- agent invocations;
-- wall-clock latency;
-- model/API duration where available;
-- retries and rework;
-- human interventions.
+Useful metrics include:
 
-### Simplicity and maintainability
+- blind editorial pass rate;
+- thesis/conclusion coherence;
+- logical continuity;
+- calibrated nuance;
+- target-audience explanation quality;
+- reader HIGH-gap rate;
+- jargon/assumed-knowledge burden;
+- post-red-team residual vulnerability;
+- unnecessary redundancy or structural monotony.
 
-- fewer active mechanisms;
-- fewer workflow states or transitions;
-- fewer deterministic branches;
-- fewer hooks, agents, skills, rules, or duplicated policies;
-- smaller always-loaded instruction surface;
-- clearer ownership and source-of-truth boundaries;
-- reduced failure surface without loss of guarantees.
+### Control metrics
 
-No single scalar score replaces these dimensions. Each experiment must declare a primary metric and guardrails.
+Useful metrics include:
 
-## Non-goals
+- routing correctness;
+- false `COMPLETE` rate;
+- stale-manifest acceptance rate;
+- stale-word-count acceptance rate;
+- gate/counter correctness;
+- adversarial-isolation violation rate;
+- artifact-contract pass rate;
+- unnecessary revision or gate interaction rate.
 
-This protocol does not optimize for:
+### Efficiency metrics
 
-- novelty;
-- maximum agent count;
-- architectural sophistication;
-- prompt length;
-- benchmark score at any cost;
-- passing visible tests through grader-specific tricks;
-- replacing deterministic guarantees with model judgment merely to simplify code;
-- preserving existing machinery because it already exists.
+Measure quality-adjusted efficiency:
 
-## Experimental separation
+- cost per qualified publish;
+- tokens per qualified publish;
+- web searches per qualified publish;
+- tool calls and agent calls per qualified publish;
+- wall time per qualified publish;
+- revision cycles;
+- human gate interactions and rescue interventions.
 
-For meaningful experiments, separate these roles conceptually and, when practical, operationally.
+A cheaper article that fails quality guardrails is not an efficiency win.
 
-### Optimizer
+## Default hard guardrails
 
-Finds weaknesses, proposes changes, and implements the candidate.
+Unless the experiment explicitly justifies a different set, broad control-plane changes must preserve:
 
-### Subject
+- zero fabricated citations, URLs, quotations, author credentials, or publisher metadata in graded output;
+- zero known-DISPUTED or OUTDATED claims presented as verified fact;
+- zero silent conflict-decision drift on graded conflicts;
+- zero advocate/skeptic/red-team isolation violations in boundary tests;
+- zero false `COMPLETE` or stale-manifest acceptance regressions;
+- zero bypass of required approval or kill-condition behavior;
+- no material drop in the deterministic regression suite;
+- no loss of required audit/evidence traceability.
 
-The baseline or candidate control plane being evaluated.
-
-### Evaluator
-
-Runs the task, captures outcomes and traces, applies graders, and computes metrics.
-
-### Auditor
-
-Inspects anomalous traces, grader behavior, bypasses, and whether the experiment actually tested the stated hypothesis.
-
-The optimizer must not be the sole judge of whether its own change succeeded.
-
-For high-risk or benchmark-sensitive experiments, the candidate subject must not have read access to held-out task answers, hidden grader logic, or prior held-out transcripts.
+A hard guardrail failure rejects the candidate regardless of aggregate score.
 
 ## Evidence levels
 
-Use the strongest practical level.
+Use the strongest practical level:
 
-- **E0 — assertion:** model or human claims a change is better.
-- **E1 — anecdote:** one favorable trace or manual example.
-- **E2 — reproduction:** demonstrated failure before and successful targeted reproduction after.
-- **E3 — controlled comparison:** baseline and candidate evaluated under matched conditions across repeated trials.
-- **E4 — held-out validation:** controlled comparison on tasks or graders not available to the optimizer.
-- **E5 — field validation:** sustained improvement in real usage or production-like workloads.
+- **E0 — assertion:** model or human says the change is better.
+- **E1 — anecdote:** one favorable trace or article.
+- **E2 — reproduction:** a demonstrated defect fails before and passes after.
+- **E3 — controlled comparison:** matched baseline/candidate trials across repeated briefs.
+- **E4 — held-out validation:** matched comparison on briefs or graders unavailable to the optimizer.
+- **E5 — field validation:** sustained improvement on real production-like article work.
 
-Anecdotal success is useful for hypothesis generation, not broad retention decisions.
-
-Behavior-changing control-plane changes should normally reach E3. Changes to high-impact enforcement, general orchestration, or evaluation infrastructure should reach E4 when feasible.
+E2 can justify "this defect is fixed." It cannot justify "articles are better" or "the pipeline is more accurate." Broad quality claims normally require E3; high-impact routing, factuality, isolation, gating, or evaluator changes should reach E4 when feasible.
 
 ## Experiment classes
 
-Classify the experiment before work begins.
+### Class A — non-behavioral clarification
 
-### Class A — documentation or non-behavioral clarification
-
-Examples: correcting prose without changing loaded instructions or executable behavior.
+Examples: correcting stale file references or explanatory prose without changing loaded behavior.
 
 Minimum evidence:
 
 - source verification;
 - diff review;
-- relevant documentation checks.
+- reference/path validation.
 
 ### Class B — localized behavioral change
 
-Examples: one skill trigger, one agent capability boundary, one hook condition, one workflow transition.
+Examples: one skill rule, one claim-status precedence rule, one subagent capability boundary, one runner counter, one validator condition.
 
 Minimum evidence:
 
 - targeted reproduction;
-- focused regression coverage;
-- matched baseline/candidate trials on affected tasks;
+- focused deterministic regression coverage when applicable;
+- matched baseline/candidate trials on affected stochastic behavior;
 - repository verification.
 
 ### Class C — cross-cutting orchestration change
 
-Examples: delegation strategy, planning model, workflow topology, context strategy, broad `CLAUDE.md` changes, native-feature replacement.
+Examples: depth routing, research dialectic structure, fact-check strategy, drafting/QA loop, context compression, broad `CLAUDE.md` changes, adding/removing a pipeline stage.
 
 Minimum evidence:
 
-- controlled baseline/candidate comparison;
-- multiple representative tasks;
+- controlled article comparison;
+- multiple representative brief families;
+- affected depth coverage;
 - repeated trials;
-- regression and adversarial suites;
+- factual/editorial guardrails;
 - efficiency measurement;
-- trace audit;
-- repository verification.
+- trace audit.
 
 ### Class D — enforcement or evaluator change
 
-Examples: permission boundaries, completion gates, stale-evidence rules, grader logic, benchmark harness, hidden-eval infrastructure.
+Examples: adversarial-isolation boundaries, approval/finalization gates, stale-artifact rules, factuality/editorial graders, hidden-eval infrastructure.
 
 Minimum evidence:
 
-- everything required for Class C;
-- explicit bypass or mutation tests;
-- independent validation of the evaluator/control;
-- held-out evaluation when feasible;
-- dual evaluation when grader logic changes.
+- Class C evidence;
+- explicit bypass/mutation tests;
+- independent validation of the control/evaluator;
+- held-out confirmation when feasible;
+- old/new dual evaluation when grader logic changes.
 
 Use the higher class when uncertain.
 
-## Required experiment record
+## Experiment record
 
-Create an experiment record before implementation. Store transient run artifacts under `.workflow/experiments/<experiment-id>/` unless the repository defines another runtime location.
+Create the record before implementation. Store transient benchmark material under `.agents/control-plane-evals/<experiment-id>/` or an external evaluator workspace. Never use `.agents/artifacts/` for experiment bookkeeping.
 
-The record must contain at least:
+Minimum record:
 
 ```yaml
 id: cp-YYYYMMDD-short-name
@@ -242,729 +250,658 @@ candidate:
 metrics:
   primary: ""
   minimum_worthwhile_effect: ""
-  guardrails: []
+  hard_guardrails: []
 comparators: []
 evaluation:
   suites: []
-  trials_per_task: null
-  order_strategy: ""
-  isolation_strategy: ""
+  brief_families: []
+  pipeline_depths: []
+  scripted_gate_decisions: true
+  trials_per_brief: null
   heldout_used: false
+quality:
+  qualified_publish_definition: ""
+  factuality_grader: ""
+  editorial_grader: ""
 budget:
   max_cost_usd: null
   max_wall_time_minutes: null
-invariants: []
 environment_manifest: ""
 result: null
 ```
 
-Do not backfill the hypothesis or success threshold after seeing candidate results.
+Do not backfill the hypothesis, threshold, or guardrails after seeing candidate results.
 
 ## Phase 1 — Establish the finding
 
-### 1.1 Reproduce before redesigning
-
-Convert the suspected weakness into a concrete reproduction whenever feasible.
+### Reproduce first
 
 A useful reproduction identifies:
 
-- triggering task or state;
+- the triggering article brief, stage, or state;
 - expected behavior;
 - observed behavior;
 - exact evidence of the mismatch;
-- whether the failure is deterministic, intermittent, or environment-dependent.
+- whether the failure is deterministic, stochastic, or source/environment dependent.
 
-If the issue cannot be reproduced, record that uncertainty. Do not invent architecture to solve a hypothetical failure without evidence that its expected value justifies the cost.
+If the issue cannot be reproduced, record that uncertainty. Do not add machinery to solve a hypothetical failure without evidence that its expected value justifies the cost.
 
-### 1.2 Verify novelty
+### Verify novelty
 
 Before calling a weakness new, inspect:
 
-- current implementation;
-- tests;
-- workflow contracts;
-- hooks and permissions;
-- relevant rules, skills, and agent definitions;
-- audit behavior;
+- the relevant article skill and references;
+- `scripts/pipeline_runner.py`, `scripts/validate_artifacts.py`, and `scripts/artifact_contract.py` when deterministic behavior is involved;
+- existing tests;
+- completed/failed `.agents/artifacts/` evidence when relevant;
+- `pipeline_learnings.md` and `.agents/knowledge/article-pipeline/` for already-known recurring issues;
+- relevant subagent definitions and capability boundaries;
 - current first-party Claude Code semantics when version-sensitive.
 
-A missing prose statement is not a finding if executable behavior already enforces the property adequately.
+A missing prose statement is not a finding if the behavior is already adequately enforced elsewhere.
 
-### 1.3 Identify the control type
+### Place the control correctly
 
-Classify the failure before choosing a mechanism:
+Use this default mapping:
 
 | Failure type | Preferred control |
 | --- | --- |
-| Always-on project fact or invariant | concise `CLAUDE.md` policy |
-| Path-specific instruction | scoped rule |
-| Conditional multi-step procedure | skill |
-| Agent specialization | agent definition |
-| Must-not-happen tool behavior | permission / capability restriction / hook |
-| Deterministic state transition | workflow code / schema |
-| Completion fact | executable verification / grader |
-| Repeated cross-session learning | memory only if benchmark contamination is not a concern |
+| Always-on article-pipeline invariant | concise `CLAUDE.md` policy |
+| Conditional stage/editorial procedure | owning skill/reference |
+| Complexity/depth routing error | triage skill or deterministic routing code if objective |
+| Product-critical independent perspective | isolated subagent + bounded delegation payload |
+| Must-not-see / must-not-do behavior | capability/deterministic restriction, not prose alone |
+| Deterministic stage/counter mutation | `scripts/pipeline_runner.py` |
+| Persisted artifact consistency | artifact contract / validator / manifest code |
+| Human editorial choice | explicit gate + persisted decision artifact |
+| Claim-verification policy | fact-check skill + QA; deterministic checks where objective |
+| Publication-contract fact | `scripts/validate_artifacts.py` |
+| Cross-run calibration | pipeline learning/knowledge only when justified and benchmark-safe |
 
-Use this mapping as a default, not a substitute for measurement.
+Use this as a default, not a substitute for evidence.
 
-## Phase 2 — Form the experimental contract
+## Phase 2 — Predeclare the experiment
 
-Before editing, write a falsifiable hypothesis in this form:
+Write the hypothesis in this form:
 
-> Because `<cause>`, the current control plane produces `<failure or waste>`. Changing `<specific mechanism>` should improve `<primary observable metric>` by at least `<minimum worthwhile effect>` while preserving `<guardrails>`.
+> Because `<cause>`, the current article pipeline produces `<failure or waste>`. Changing `<specific mechanism>` should improve `<primary metric>` by at least `<minimum worthwhile effect>` while preserving `<hard guardrails>`.
 
-### 2.1 Choose one primary metric
+Choose one primary metric. Use QPR for broad end-to-end changes; use the narrowest direct metric for subsystem changes.
 
-The primary metric should directly measure the targeted property.
+Examples of worthwhile effects:
 
-Examples:
+- eliminate a deterministic state/publication bypass;
+- improve QPR by at least 5 percentage points;
+- reduce unsupported factual claims by at least 25% without accessibility regression;
+- reduce median cost per qualified publish by at least 15% with no meaningful quality regression;
+- remove one orchestration layer while preserving QPR within a predeclared non-inferiority margin.
 
-- proportion of tasks ending in externally verified success;
-- false-success rate;
-- stale-evidence bypass rate;
-- number of required human interventions;
-- median cost among successful trials;
-- median tool calls among successful trials;
-- success rate under a fixed cost budget;
-- always-loaded context tokens;
-- number of active orchestration mechanisms removed under a non-inferiority constraint.
-
-Do not choose a proxy when the outcome can be measured directly.
-
-### 2.2 Declare a minimum worthwhile effect
-
-Specify how much improvement is worth the complexity and migration cost.
-
-Examples:
-
-- eliminate a known deterministic bypass;
-- improve verified task success by at least 5 percentage points on the targeted capability suite;
-- reduce median cost per successful task by at least 15% with no meaningful success regression;
-- remove one orchestration layer while keeping success within a declared non-inferiority margin.
-
-The threshold must be chosen before candidate results are known.
-
-### 2.3 Declare guardrails
-
-Guardrails are properties that must remain within bounds even if the primary metric improves.
-
-Common guardrails:
-
-- zero protected-path or permission-boundary violations;
-- zero false-success regressions on the relevant suite;
-- regression suite remains above its required threshold;
-- no material increase in cost or latency beyond the declared budget;
-- no new unrecoverable workflow states;
-- no loss of required audit evidence.
-
-A hard guardrail failure rejects the candidate regardless of aggregate score.
+The threshold must exist before candidate results.
 
 ## Phase 3 — Freeze the baseline
 
-Before the candidate change, capture a baseline manifest.
-
-At minimum record:
+Record at least:
 
 - git commit and dirty-tree diff;
 - Claude Code version;
-- model identifier;
-- effort level;
-- permission mode;
-- command-line flags;
-- project, local, user, and managed setting sources that affect the run;
-- enabled hooks;
-- enabled MCP servers and plugins;
+- model and effort;
+- permission mode and relevant command flags;
+- project/user/managed settings that affect the run;
+- enabled MCP servers/plugins and relevant external tools;
 - relevant environment variables;
-- auto-memory state;
-- `CLAUDE_CONFIG_DIR` or equivalent configuration isolation;
-- OS and architecture;
-- CPU and memory allocation/limits when relevant;
-- concurrency;
-- per-task timeout;
-- network/egress constraints;
-- benchmark task-set version;
-- grader version;
-- evaluator commit or digest.
+- auto-memory state and configuration isolation;
+- OS/architecture and meaningful CPU/memory limits;
+- timeout and network policy;
+- evaluator commit/version;
+- article brief set/version and target audiences;
+- scripted human gate decisions;
+- selected depth/route for each brief;
+- live-web retrieval window;
+- `.agents/knowledge/article-pipeline/` state if learning is enabled.
 
-Baseline and candidate must use matched settings unless the experiment explicitly changes one of them.
+Baseline and candidate use matched conditions unless a named condition is the experimental variable.
 
-### 3.1 Use fresh processes
+### Fresh processes
 
-Run each serious benchmark trial in a fresh Claude Code process.
+Run serious trials in fresh Claude Code processes. Do not validate startup-loaded instruction changes only in the session that edited them.
 
-Do not validate startup-loaded instruction changes only inside the session that edited them.
+### Isolate persistent state
 
-For automated experiments, prefer non-interactive fresh invocations with structured output and explicit model/effort/settings rather than inherited interactive state.
-
-### 3.2 Isolate persistent state
-
-Unless persistent memory is the experimental variable:
-
-- disable auto memory during benchmark trials; or
-- give every trial an isolated, empty memory/config directory.
-
-Prevent previous trials from leaking state through:
+Unless memory/learning is the variable, isolate or disable:
 
 - auto memory;
-- transcripts;
-- caches when they change behavior;
-- git history created by prior trials;
-- shared worktrees;
-- generated files;
-- local settings;
-- prior benchmark output.
+- prior transcripts;
+- prior article artifacts;
+- benchmark outputs;
+- generated files from earlier trials;
+- local settings that differ between arms;
+- cross-run article knowledge not intentionally shared by both arms.
 
-### 3.3 Keep authentication separate from experimental state
+Keep evaluator data outside the subject-readable environment.
 
-If configuration isolation is used, provide credentials through a controlled mechanism without copying unrelated user configuration into the trial environment.
+## Phase 4 — Evaluation suites
 
-## Phase 4 — Build or select the evaluation suite
+Do not use one benchmark for everything.
 
-Do not evaluate every change with one undifferentiated benchmark.
+### Deterministic regression suite
 
-Maintain distinct suites.
+Cover objective pipeline behavior, including:
 
-### 4.1 Regression suite
+- legal/illegal stage transitions;
+- gate and revision counters;
+- kill-condition recording;
+- word-count synchronization;
+- manifest freshness;
+- required artifacts by route;
+- `COMPLETE`/`REVIEW_REQUIRED` finalization;
+- tool-degraded/optional-metadata conditions;
+- structurally inspectable capability boundaries.
 
-Purpose: prove that behavior already considered reliable remains reliable.
+Every material deterministic bug should become regression coverage after it is fixed.
 
-Characteristics:
+### Article capability suite
 
-- expected pass rate near 100%;
-- stable, unambiguous tasks;
-- deterministic graders where practical;
-- every material production/control-plane failure should graduate into this suite once fixed.
+Maintain realistic briefs across:
 
-### 4.2 Capability suite
+- SIMPLE, STANDARD, and COMPLEX depth;
+- low/high contentiousness;
+- evergreen/time-sensitive facts;
+- source-rich/source-scarce topics;
+- genuine contradictory evidence;
+- quantitative/data-heavy topics;
+- policy/legislation or acronym-heavy technical topics;
+- broad and expert audiences;
+- briefs where good research should weaken the initial thesis.
 
-Purpose: create headroom for measurable improvement.
+Do not claim a broad pipeline improvement from one topic.
 
-Characteristics:
+### Epistemic/adversarial integrity suite
 
-- contains tasks the current control plane sometimes fails;
-- spans the behaviors the control plane is expected to improve;
-- should not be permanently saturated;
-- successful mature cases can graduate to regression coverage.
+Include deliberately diagnostic cases:
 
-### 4.3 Adversarial integrity suite
+- plausible false statistic;
+- stale value with an authoritative newer value;
+- real citation that does not support the wording;
+- social-platform attribution/URL mismatch;
+- single-source evidence that should remain qualified;
+- contradictory authoritative sources requiring conflict handling;
+- low-evidence vector that should stay insufficient;
+- OUTDATED/DISPUTED claim that must not appear as settled fact;
+- tempting fabricated-citation or fabricated-quote opportunity;
+- skeptic delegation that must not receive advocate claims/framing;
+- red-team delegation that must not receive the full draft;
+- post-draft edit that should invalidate dependent count/manifest state;
+- unresolved blocker that must prevent `COMPLETE`.
 
-Purpose: test false-success and bypass behavior.
+### Editorial/audience suite
 
-Include cases such as:
+Use blind grading for:
 
-- attempting an invalid workflow transition;
-- modifying relevant files after evidence is captured;
-- attempting to reuse stale evidence;
-- verifier encountering a failing test;
-- agent attempting a prohibited write;
-- implementation that prints success while leaving the outcome incorrect;
-- alternate command/path that bypasses the intended hook;
-- malformed or partial evidence;
-- interrupted or timed-out execution;
-- intentionally misleading but plausible model assertions.
+- thesis clarity;
+- logical coherence;
+- calibration and nuance;
+- explanation quality for the declared audience;
+- jargon/assumed knowledge;
+- redundancy and structural monotony;
+- conclusion strength relative to evidence;
+- treatment of material counterevidence;
+- usefulness/actionability where appropriate;
+- publication-ready prose quality.
 
-For deterministic controls, include mutation-style tests that deliberately try to cross the boundary.
+Do not use the pipeline's own reader, QA, or red-team rating as the sole evidence that the same dimension improved.
 
-### 4.4 Efficiency suite
+### SEO/delivery suite
 
-Purpose: measure overhead on tasks that do not need maximum orchestration.
+When relevant, test objective package properties:
 
-Include easy, medium, and complex tasks. A control plane that helps only hard tasks but taxes every easy task may be a net regression.
+- title/meta/slug constraints;
+- structured-data validity;
+- external-link integrity;
+- author-null behavior without fabrication;
+- required TODO behavior for unknown site/publisher URLs;
+- consistency with the final article.
 
-Measure successful-task cost rather than raw cost alone whenever possible.
+Do not claim search-ranking improvement without downstream ranking evidence.
 
-### 4.5 Held-out suite
+### Efficiency suite
 
-Purpose: detect overfitting, benchmark gaming, and optimizer-specific tuning.
+Use representative briefs at each affected depth. Measure cost, searches, tokens, tool calls, agent calls, latency, revisions, and human interactions **per qualified publish**.
 
-For major experiments:
+### Held-out suite
 
-- keep some tasks outside the candidate-readable checkout;
-- keep hidden grader data outside the candidate's tool-accessible environment;
-- do not expose previous held-out transcripts to the optimizer;
-- rotate or refresh held-out tasks when contamination is suspected.
+For high-impact experiments:
 
-The held-out suite should test the same capability distribution as the visible development suite without reusing exact answers. Split by task family when near-duplicates could leak the solution pattern across partitions.
+- keep some briefs outside the candidate-readable checkout;
+- keep hidden factual traps/reference facts/grader logic outside subject tool access;
+- do not expose prior held-out outputs or grader rationales to the optimizer;
+- group near-duplicate topic families in the same partition;
+- refresh cases when contamination is suspected.
 
-### 4.6 Development versus confirmatory evaluation
+Held-out briefs should resemble real publication work, not arbitrary puzzles.
 
-Use visible development tasks for iteration. Use held-out tasks for confirmation, not hill-climbing.
+## Phase 5 — Validate briefs and graders
 
-Before the confirmatory run:
+A benchmark can be wrong.
 
-- freeze the candidate commit;
-- freeze grader and harness versions;
-- freeze success thresholds and analysis rules;
-- record the experiment manifest.
+Before trusting a brief:
 
-If the candidate is changed because of a held-out result, that held-out observation has become development information. Do not present a second run on the same exposed cases as independent confirmation; use fresh held-out cases or label the result as iterative development evidence.
+1. make the topic, audience, time horizon, and constraints explicit;
+2. confirm both arms can research it with the available tools;
+3. identify hidden factual/conflict conditions without exposing them to the subject;
+4. verify known good deterministic fixtures pass;
+5. verify intentionally bad examples fail the relevant graders;
+6. ensure alternate valid theses/structures are not rejected accidentally;
+7. distinguish subject failure from source volatility and infrastructure failure;
+8. inspect grader edge cases and timeouts.
 
-For model-based graders, hide baseline/candidate identity and implementation details when they are not needed for grading.
+### Layered article grading
 
-## Phase 5 — Validate tasks and graders
+Use separate layers.
 
-A benchmark is itself software and can be wrong.
+**Layer A — deterministic contract**
 
-Before trusting a task:
+Use repository code for state, artifact integrity, manifests, required outputs, and publication blockers.
 
-1. ensure the task statement contains the information needed to satisfy the grader;
-2. produce or retain a known reference solution when practical;
-3. verify the reference solution passes;
-4. verify an intentionally bad solution fails;
-5. check that alternate valid solutions are not accidentally rejected;
-6. distinguish agent failure from infrastructure failure;
-7. inspect grader edge cases and timeouts.
+**Layer B — independent claim/citation integrity**
 
-Prefer grading outcomes over requiring one exact trajectory.
+Extract material factual claims from the final draft and verify a complete or predeclared sample. Check:
 
-Use deterministic graders for objective properties. Use model-based graders only where deterministic grading cannot capture the desired quality, and calibrate those graders against human judgment or fixed reference cases.
+- cited URL/source identity;
+- whether the source supports the wording;
+- current value/date for the declared time horizon;
+- VERIFIED-UPDATED/DISPUTED/OUTDATED handling;
+- calibration of uncertainty.
 
-Model graders should be narrow, rubric-driven, and allowed to return `unknown` or `insufficient evidence` rather than invent confidence.
+The pipeline's own `fact_check_report.md` is evidence about its process, not an independent grader of itself.
+
+**Layer C — blind editorial/audience quality**
+
+Use a rubric-driven model grader, calibrated human review, or both. Grade against the declared brief/audience, not generic style preference.
+
+**Layer D — route-specific quality**
+
+Apply only when relevant: adversarial resilience, reader accessibility, SEO package correctness.
+
+Model graders must be blind to baseline/candidate identity and internal pipeline scores when possible. Allow `unknown` or `insufficient evidence` instead of forced confidence.
 
 ## Phase 6 — Choose the smallest credible candidate
 
-Generate at least one deletion or simplification candidate when relevant.
+Before adding machinery, ask:
 
-Before adding a mechanism, ask:
-
-1. Can the failure be solved by deleting conflicting instructions or redundant machinery?
+1. Can conflicting/redundant instructions be deleted?
 2. Can an existing deterministic control be tightened?
-3. Can existing behavior be routed correctly rather than adding another agent/state?
+3. Can the current route be corrected without another stage/agent?
 4. Can a conditional procedure move out of always-loaded context?
-5. Can a native Claude Code capability replace custom machinery with equal or stronger guarantees?
-6. Can a prompt rule be converted into a capability boundary if it must always hold?
+5. Can native Claude Code behavior replace custom machinery with equal or stronger guarantees?
+6. Can a prose prohibition become a capability boundary where it truly must hold?
 
-If multiple candidates are plausible, prefer an ablation ladder instead of changing several mechanisms at once.
+When multiple candidates are plausible, use an ablation ladder:
 
-Example:
-
-1. baseline;
-2. baseline minus suspected unnecessary mechanism;
+1. current baseline;
+2. baseline minus the suspected unnecessary mechanism;
 3. smallest replacement;
-4. larger redesign only if the smaller candidate fails.
+4. larger redesign only if necessary.
 
-This makes causal attribution possible.
+This improves causal attribution.
 
 ## Phase 7 — Implement without contaminating the experiment
 
 - Preserve unrelated working-tree changes.
-- Add or update behavioral coverage for the targeted invariant.
-- Do not modify benchmark expectations merely to match the candidate.
-- Keep candidate changes coherent and minimal.
-- Record any unplanned experimental variable introduced during implementation.
-- If the candidate requires changing both the subject and evaluator, split those into separate commits or experiments when possible.
+- Add/update deterministic coverage for objective behavior changes.
+- Do not modify benchmark expectations to fit the candidate.
+- Keep the candidate coherent and minimal.
+- Record unplanned experimental variables.
+- Separate subject and evaluator changes into different commits/experiments when possible.
+- Do not write benchmark hints or held-out information into `.agents/knowledge/article-pipeline/`.
+- Do not use `.agents/artifacts/` for evaluation bookkeeping.
 
-After the final behavior-changing edit, run repository verification required by `CLAUDE.md`.
+After the final behavior-changing edit, run deterministic verification required by `CLAUDE.md`. If the claim is that generated articles improve, run the article evaluation appropriate to the experiment class; unit tests cannot prove article quality.
 
 ## Phase 8 — Run the comparison
 
-### 8.1 Match conditions
+### Match conditions
 
-Baseline and candidate must use the same experimental budget and the same:
+Baseline and candidate use the same:
 
-- task inputs;
-- model and effort;
-- Claude Code version;
-- permissions;
-- external tools;
-- resource limits;
-- timeout;
-- evaluator;
-- network policy;
-- initial repository state;
-- memory policy.
+- article brief and target audience;
+- model/effort and Claude Code version;
+- permissions and external tools;
+- resource limits and timeout;
+- evaluator and network policy;
+- initial repository/artifact state;
+- memory policy;
+- experimental budget.
 
-Any intentional difference must be named as an experimental variable. If the candidate intentionally changes resource consumption, evaluate both quality under a matched resource budget and efficiency at comparable achieved quality when practical.
+Freeze or script thesis/approval/postdraft human decisions unless gate behavior itself is the variable. Different human choices can dominate the outcome and destroy causal attribution.
 
-Stop a run early when a predeclared hard invariant is violated and continuing cannot add useful diagnostic evidence. Record the early stop rather than silently dropping the trial.
+Live web research is time-varying. Interleave baseline/candidate runs tightly, record retrieval timestamps, and where practical retain an evaluator-side source snapshot or reference pack. Do not interpret a source that appeared between arms as an orchestration improvement.
 
-### 8.2 Repeat trials
+### Repeat trials
 
-Agent behavior is stochastic. Do not infer broad improvement from one run.
+Agent behavior is stochastic.
 
-Default trial guidance:
+Starting guidance:
 
-- deterministic enforcement reproductions: repeat until bypass behavior is convincingly characterized;
-- localized Class B changes: at least 3 trials per stochastic targeted task when cost permits;
-- Class C/D changes: normally at least 5 trials per key stochastic task, with more trials when observed differences are small or variance is high.
+- deterministic boundary reproduction: repeat enough to characterize the bypass/fix;
+- Class B stochastic changes: at least 3 trials per targeted brief when cost permits;
+- Class C/D: normally at least 5 trials per key brief family, with coverage across affected depths and more trials near the decision threshold.
 
-These are starting points, not magic numbers. Increase trials when the decision is near the threshold.
+These are starting points, not magic numbers.
 
-### 8.3 Pair and randomize
+### Pair and randomize
 
-Run baseline and candidate on the same task set.
+Run both arms on the same brief set. Interleave runs and randomize arm order when time-of-day or service-load effects could matter.
 
-When service load or time-of-day effects could matter:
+For high-impact experiments, include a negative-control brief/fixture when practical. Unexplained movement in an unrelated control can indicate harness drift or contamination.
 
-- interleave baseline and candidate runs;
-- randomize which one runs first per task;
-- spread trials across more than one time window when practical.
+### Capture every trial
 
-Do not run all baseline trials under one environment condition and all candidate trials under another if those conditions may differ.
+Record:
 
-For high-impact experiments, include at least one unrelated negative-control task family when practical. A candidate targeted at delegation, for example, should not mysteriously improve an unrelated deterministic permission test; unexplained movement can indicate harness drift or contamination.
+- brief ID/family, audience, and time horizon;
+- arm identity;
+- selected depth and route flags;
+- scripted/actual gate decisions;
+- environment-manifest digest;
+- timestamps/retrieval window;
+- finalization and validator result;
+- final article plus route-relevant delivery artifacts;
+- independent factual/citation grader output;
+- independent editorial/audience grader output;
+- route-specific grader output;
+- transcript/trace reference;
+- cost/tokens/tool/search/agent counts when available;
+- revision and human-intervention counts;
+- infrastructure/source-volatility classification;
+- failure category.
 
-### 8.4 Capture complete trial data
+Never count an infrastructure failure as subject capability evidence without labeling it separately.
 
-For every trial, preserve enough information to reconstruct the result:
+## Phase 9 — Grade independently
 
-- task ID and variant;
-- baseline/candidate identity;
-- environment manifest digest;
-- start/end timestamps;
-- exit status;
-- final repository or environment outcome;
-- grader outputs;
-- tool/agent trace or transcript reference;
-- cost and token metadata when available;
-- wall time;
-- tool-call count;
-- agent invocation count;
-- human intervention count;
-- infrastructure-error classification;
-- failure classification.
+Prefer this evidence order:
 
-Never count an infrastructure failure as evidence of agent capability without labeling it separately.
+1. final article/delivery artifacts;
+2. independent claim/citation verification;
+3. deterministic artifact/state validation;
+4. blind editorial/audience grading;
+5. trace evidence about process/isolation;
+6. pipeline-generated QA/red-team/reader/SEO judgments;
+7. the subject's own assertion of readiness.
 
-## Phase 9 — Grade outcomes independently
+Internal pipeline reports are useful product artifacts, not independent proof that the pipeline improved itself.
 
-Prefer this order of evidence:
+### False success
 
-1. final external state;
-2. deterministic tests or assertions;
-3. static analysis or schema checks;
-4. transcript-derived evidence;
-5. model judgment;
-6. subject's own claim.
+Track two forms.
 
-A statement such as "all tests pass" is not evidence if the tests did not run or their outputs are unavailable.
+**Contract false success:** run reaches or claims `COMPLETE` while the authoritative artifact validator says invalid/review-required.
 
-### 9.1 False-success metric
+**Qualified false success:** pipeline delivers the article as publication-ready while an independent grader finds a predeclared hard factual/citation/integrity violation.
 
-Track false success explicitly:
+Do not treat ordinary editorial preference disagreement as false success.
 
-> false success = subject reports or transitions to completion while an authoritative grader says the task is incomplete or invalid.
+### Evidence freshness
 
-False-success rate is a first-class control-plane metric and should normally be a hard guardrail.
-
-### 9.2 Evidence freshness metric
-
-For workflows that cache evidence, test whether evidence remains valid after relevant state changes.
-
-The grader should distinguish:
+Test whether persisted evidence remains valid after relevant changes:
 
 - current valid evidence;
 - stale evidence correctly invalidated;
 - stale evidence incorrectly accepted;
-- evidence that cannot be tied to an actual command or result.
+- evidence not traceable to actual research, verification, user decision, or command output.
 
-## Phase 10 — Inspect traces
+## Phase 10 — Inspect traces and analyze uncertainty
 
-Aggregate scores are insufficient.
+Aggregate scores are insufficient. Inspect:
 
-Inspect:
-
-- every unexpected guardrail violation;
-- every infrastructure error;
-- every baseline/candidate disagreement on a targeted reproduction;
-- representative successes;
-- representative failures;
-- unusually cheap or expensive runs;
+- every hard-guardrail violation;
+- every infrastructure/source-volatility error;
+- baseline/candidate disagreements on targeted reproductions;
+- representative successes/failures;
+- unusually cheap/expensive runs;
 - suspiciously perfect held-out performance.
 
-Ask whether the candidate improved the intended mechanism or merely discovered a shortcut in the grader.
+Ask whether the candidate improved the intended mechanism or merely discovered a grader shortcut.
 
-For major experiments, an auditor who did not implement the candidate should review a sample when practical.
+Report at minimum:
 
-## Phase 11 — Analyze effect and uncertainty
-
-Report both absolute performance and change from baseline.
-
-At minimum report:
-
-- task/trial counts;
-- success rate or primary metric for baseline;
-- success rate or primary metric for candidate;
-- absolute and relative delta where meaningful;
+- brief/trial counts and depth coverage;
+- baseline/candidate primary metric;
+- absolute/relative delta where meaningful;
 - variation across trials;
-- infrastructure-error rate;
-- guardrail results;
+- hard-guardrail results;
+- infrastructure/source-volatility rate;
 - efficiency deltas;
-- observed outliers.
+- failure-category shifts;
+- meaningful outliers.
 
-Do not report excessive decimal precision unsupported by the sample size.
+For larger experiments, use paired uncertainty analysis appropriate to the metric, such as paired bootstrap intervals or paired binary tests. Pair by brief.
 
-For larger experiments, use an appropriate uncertainty estimate such as paired bootstrap confidence intervals, a paired binary test, or another method suited to the metric. Pair by task whenever baseline and candidate see the same cases.
-
-Statistical significance is not a substitute for practical significance. A tiny but significant gain may not justify added complexity.
+Statistical significance does not replace practical significance. Tiny gains do not justify large orchestration taxes.
 
 ## Retention decision
 
-Classify the result as **accept**, **reject**, or **inconclusive**.
-
 ### Accept
 
-Accept only when all are true:
+Accept only when:
 
-- the targeted failure or waste is demonstrably improved;
-- the primary metric meets the predeclared minimum worthwhile effect, or a deterministic defect is eliminated;
-- all hard guardrails pass;
+- the targeted failure/waste is demonstrably improved;
+- the primary metric meets the predeclared threshold or a deterministic defect is eliminated;
+- every hard guardrail passes;
 - important regressions are absent;
-- efficiency is within the declared budget;
-- the mechanism is the simplest credible intervention demonstrated to work;
-- evidence is strong enough for the experiment class.
+- efficiency remains inside the declared budget;
+- evidence strength matches the experiment class;
+- the intervention is the simplest credible mechanism shown to work.
 
 ### Reject
 
-Reject when any are true:
+Reject when:
 
-- the targeted effect does not reproduce;
-- a hard guarantee regresses;
-- the candidate relies on benchmark-specific behavior rather than solving the underlying problem;
-- cost or complexity exceeds the declared budget without sufficient benefit;
-- the observed gain disappears under matched or repeated trials;
-- the evaluator cannot distinguish true improvement from contamination.
+- the finding does not reproduce;
+- any hard guarantee regresses;
+- gains depend on benchmark-specific gaming;
+- cost/complexity exceeds the declared tradeoff;
+- improvement disappears under matched repeated trials;
+- evaluator contamination prevents causal interpretation.
 
 ### Inconclusive
 
-Mark inconclusive when:
+Use when:
 
-- observed effects are within noise;
-- trial count is inadequate for the effect size;
-- environment drift compromised comparability;
+- effects are within noise;
+- trial count is inadequate;
+- live-web or environment drift compromises comparability;
 - grader validity is uncertain;
-- results conflict across suites without an explained tradeoff.
+- suite results conflict without a predeclared acceptable tradeoff.
 
-The default action for an inconclusive additive change is revert or do not merge.
+The default action for an inconclusive additive change is revert/do not merge.
 
-A simplification may be retained under a predeclared non-inferiority rule if quality remains within tolerance and complexity or cost is measurably reduced.
+A simplification may be retained under a predeclared non-inferiority rule if quality stays within tolerance and cost/complexity falls materially.
 
-## Special protocol: simplification and deletion
+## Special protocol — simplification and ablation
 
-Complexity is a recurring tax and must periodically re-earn its existence.
+Complexity must periodically re-earn its existence.
 
-For an existing mechanism, run an ablation:
+Compare:
 
 > current control plane vs. current control plane minus the mechanism
 
-Delete the mechanism when:
+Useful ablation targets include:
 
-- required guarantees remain intact;
-- primary quality metrics stay within the declared non-inferiority margin;
-- complexity, context, cost, latency, or maintenance burden improves materially.
-
-Examples of ablation targets:
-
-- agent roles;
-- workflow states;
-- hooks;
-- duplicated rules;
+- research summarization passes;
+- duplicated persona/rubric text;
 - always-loaded instructions;
-- planner or verifier passes;
-- custom machinery now duplicated by native Claude Code capabilities.
+- extra QA/revision loops;
+- red-team or reader-simulation scope on depths where it may not earn its cost;
+- custom orchestration duplicated by improved native Claude Code behavior.
 
-Do not assume a mechanism remains valuable because it was valuable for an older model or earlier Claude Code version.
+Do not casually ablate factuality, human-decision, publication, or adversarial-isolation controls. If one is tested for removal, the non-inferiority suite must directly exercise the failure mode it prevents.
 
-## Special protocol: changes to enforcement
+Delete a mechanism when required guarantees remain intact, quality stays within the declared non-inferiority margin, and complexity/context/cost/latency improves materially.
 
-When modifying a deterministic safety or correctness boundary:
+## Special protocol — enforcement changes
+
+When modifying a deterministic or capability boundary:
 
 1. define the protected invariant;
-2. enumerate known entry points and alternate paths;
+2. enumerate entry and bypass paths;
 3. add positive tests for allowed behavior;
 4. add negative tests for blocked behavior;
-5. add bypass attempts using alternate commands/tools/paths;
-6. test error and timeout behavior;
-7. confirm failure is visible to the main session;
-8. confirm the control cannot be silently bypassed by changing runtime state that should be protected.
+5. test alternate commands/tools/paths;
+6. test errors/timeouts;
+7. confirm failure is visible to the orchestrator;
+8. confirm protected runtime state cannot be silently mutated around the control.
 
-Never weaken a valid boundary solely to improve benchmark completion rate.
+Never weaken a valid factuality, isolation, gate, or publication boundary solely to improve completion rate or lower cost.
 
-## Special protocol: changes to evaluators or benchmarks
+## Special protocol — evaluator changes
 
-Evaluator changes are high-risk because they can manufacture apparent progress.
+Evaluator changes can manufacture apparent progress.
 
-When modifying a grader, task, or harness:
+When changing a grader, brief, or harness:
 
 - preserve the pre-change evaluator;
-- validate reference good and bad cases against both versions;
-- report candidate performance under the old evaluator and new evaluator where meaningful;
-- explain every score change caused by the grader rather than the subject;
-- do not retroactively redefine success because the candidate found an inconvenient valid path;
-- do revise an evaluator when evidence shows it is genuinely wrong, ambiguous, brittle, or gameable.
+- validate known good/bad anchors against old and new versions;
+- report candidate performance under both where meaningful;
+- separate score movement caused by grader changes from subject changes;
+- do not retroactively redefine success because the candidate found an inconvenient path;
+- do fix an evaluator when evidence shows it is wrong, ambiguous, brittle, or gameable.
 
-A grader fix and a subject improvement should be reported as separate effects.
+A grader fix and a control-plane improvement are separate effects.
 
-## Special protocol: self-modifying instructions and configuration
+## Special protocol — self-modifying instructions/configuration
 
-When the candidate changes startup-loaded behavior such as root `CLAUDE.md`, settings, permissions, or other startup configuration:
+When changing startup-loaded behavior such as root `CLAUDE.md`, settings, model routing, or agent definitions:
 
 - the editing session is not a valid candidate trial;
-- launch fresh baseline and candidate processes from clean states;
-- verify which instructions and settings actually loaded;
-- avoid inherited personal configuration unless intentionally part of the product environment.
+- launch fresh baseline and candidate processes;
+- verify which configuration actually loaded;
+- isolate personal configuration and prior article memory unless intentionally present in both arms.
 
-When benchmarking configuration selection itself, include the active configuration sources in the evidence.
+## Special protocol — model or Claude Code upgrades
 
-## Special protocol: model or Claude Code upgrades
+Do not attribute a platform/model upgrade to the control plane.
 
-Do not attribute a model or platform upgrade to a control-plane change.
+After a material upgrade:
 
-When the model or Claude Code version changes materially:
-
-1. establish a new baseline on the unchanged control plane;
-2. rerun critical regression and capability suites;
-3. rerun selected ablations of expensive orchestration components;
-4. remove scaffolding that no longer provides measurable lift;
-5. record any semantic changes to native tools, agents, hooks, skills, or configuration that invalidate prior assumptions.
+1. establish a new baseline on unchanged control-plane code;
+2. rerun critical deterministic and article capability suites;
+3. rerun selected ablations of expensive scaffolding;
+4. remove machinery that no longer provides measurable lift;
+5. update assumptions about skills, agents, capabilities, tools, or configuration when native semantics changed.
 
 Model upgrades are opportunities to simplify the harness.
 
-## Benchmark integrity and anti-gaming rules
+## Benchmark integrity
 
 The optimizer must not:
 
-- read held-out expected answers;
-- read hidden grader logic when the evaluator can isolate it;
+- read held-out expected facts/answers;
+- read hidden grader logic when it can be isolated;
 - search for benchmark answer keys;
-- use prior held-out transcripts as hints;
+- use prior held-out outputs/rationales as hints;
 - modify evaluator data during subject execution;
-- treat benchmark identity discovery as task progress;
-- weaken a grader merely to obtain a better candidate score.
+- treat benchmark identity discovery as article progress;
+- weaken a grader merely to raise candidate score.
 
-For serious held-out evaluations, prefer an evaluator architecture where:
+For serious held-out evaluation:
 
-- the subject receives only the task and production-equivalent tools;
-- hidden tasks/graders live outside the subject-readable filesystem;
+- subject receives only the article brief, declared audience/gate inputs, and production-equivalent tools;
+- hidden briefs/factual traps/reference facts/graders live outside subject-readable storage;
 - grading occurs after subject execution;
-- evaluator credentials and control files are not available to the subject;
-- trial artifacts are copied out after the run rather than exposed in advance.
+- evaluator credentials/control files are unavailable to the subject;
+- artifacts are copied out after the run rather than exposed in advance.
 
-Treat suspicious benchmark-aware behavior as contamination and invalidate affected trials unless the benchmark explicitly intends to measure that behavior.
+Treat suspicious benchmark-aware behavior as contamination.
 
 ## Failure taxonomy
 
-Classify failures rather than collapsing everything into pass/fail.
+Classify failures rather than collapsing everything into pass/fail:
 
-Recommended categories:
-
-- `subject_reasoning` — incorrect decision or plan;
-- `subject_execution` — correct intent, failed implementation/action;
-- `verification` — failed to verify or interpreted evidence incorrectly;
-- `false_success` — claimed completion despite failed outcome;
-- `orchestration` — delegation/state/control-flow failure;
-- `permission_or_hook` — enforcement misbehavior;
-- `context_or_memory` — stale, missing, or contaminated context;
+- `routing` — wrong depth/stage for the brief;
+- `research_coverage` — important vector missed or evidence too weak/narrow;
+- `research_independence` — advocate/skeptic anchoring or information-boundary failure;
+- `claim_verification` — false/stale/mismatched claim not corrected or calibrated;
+- `citation_integrity` — citation missing, fabricated, dead, wrong, or non-supporting;
+- `conflict_fidelity` — research conflict or user decision mishandled;
+- `drafting` — prose/structure failure despite adequate evidence;
+- `qa` — material defect missed or valid prose repeatedly blocked;
+- `red_team` — material vulnerability missed or repair worsened article;
+- `reader_accessibility` — audience mismatch, jargon, or logical-gap failure;
+- `seo_delivery` — objective package defect or fabricated metadata;
+- `artifact_state` — state/count/manifest/contract inconsistency;
+- `false_success` — contract or qualified false success;
+- `orchestration` — delegation/control-flow failure not covered above;
+- `context_or_memory` — stale/missing/contaminated context or cross-run knowledge;
 - `grader` — evaluation defect;
-- `task_spec` — ambiguous or invalid task;
-- `infrastructure` — resource, service, network, sandbox, or harness failure;
-- `timeout` — budget exhausted without classification above;
-- `contamination` — benchmark/evaluator information leaked to the subject.
+- `brief_spec` — ambiguous/invalid benchmark brief;
+- `source_volatility` — live-web source changed materially between matched runs;
+- `infrastructure` — service/network/sandbox/harness failure;
+- `timeout` — budget exhausted without a more specific cause;
+- `contamination` — held-out/evaluator information leaked to the subject.
 
-Track whether the candidate changes the distribution of failure categories, not only the aggregate success rate.
-
-## Efficiency accounting
-
-For each successful trial, capture when available:
-
-- total cost;
-- input tokens;
-- output tokens;
-- cache usage if exposed;
-- tool calls;
-- agent calls;
-- wall time;
-- verification commands;
-- retries;
-- human interventions.
-
-For control-plane comparisons, report at least:
-
-- success rate;
-- median cost per successful task;
-- median wall time per successful task;
-- median tool calls per successful task;
-- human intervention rate.
-
-If a candidate increases success by spending substantially more, state the tradeoff directly.
+Track failure-distribution shifts as well as aggregate QPR.
 
 ## Complexity accounting
 
-Every additive candidate must declare its complexity cost.
+Every additive candidate declares its complexity cost. Useful proxies:
 
-Useful proxies include change in:
-
-- always-loaded instruction lines or estimated tokens;
-- number of active agents;
-- number of active hooks;
-- number of skills/rules loaded for the affected task;
-- workflow states and transitions;
+- always-loaded instruction lines/tokens;
+- active agents;
+- skills/references loaded by the affected route;
+- stages, gates, counters, and transitions;
 - deterministic branches;
-- configuration surfaces;
-- schemas or persisted runtime objects;
-- new dependencies;
-- tests required to defend the mechanism.
+- schemas/persisted objects;
+- dependencies;
+- regression tests needed to defend the mechanism.
 
-These are proxies, not a universal complexity score. Use them to make hidden orchestration tax visible.
+These are not a universal complexity score. They expose hidden orchestration tax.
 
-## Continuous eval maintenance
-
-The evaluation suite is a product, not a one-time artifact.
+## Continuous evaluation maintenance
 
 After an accepted fix:
 
-- add the original failure as regression coverage when practical;
-- add a nearby negative/alternate case to prevent overfitting;
+- add the original failure as deterministic regression or benchmark coverage when practical;
+- add a nearby negative/alternate case;
 - preserve the causal reproduction;
 - retire redundant cases only when equivalent coverage remains.
 
-When a capability suite saturates:
+When capability cases saturate:
 
-- promote stable tasks to regression;
-- add harder or more realistic variants;
-- test longer-horizon and cross-cutting work;
-- avoid making tasks obscure merely for difficulty.
+- promote mature cases to regression/anchors;
+- add harder realistic briefs;
+- expand contentiousness, source scarcity, freshness, audience, and domain coverage;
+- do not create arbitrary obscurity solely for difficulty.
 
-Periodically audit the suite for:
+Periodically audit the suite for ambiguity, leakage, stale assumptions, grader brittleness, duplicates, missing negative cases, and mismatch with real article-production work.
 
-- ambiguity;
-- leaked answers;
-- stale assumptions;
-- invalid environment requirements;
-- grader brittleness;
-- duplicate tasks;
-- missing negative cases;
-- mismatch with real repository work.
+## Comparator set
 
-## Recommended comparator set
+Use the smallest set that answers the causal question:
 
-Use the smallest comparator set that answers the causal question.
-
-Possible comparators:
-
-- `current` — current committed control plane;
+- `current` — current committed article control plane;
 - `candidate` — proposed change;
 - `ablation` — current minus the mechanism under question;
-- `native` — simpler/native Claude Code mechanism when relevant;
-- `bare` — reduced control-plane baseline when useful for measuring total harness lift.
+- `native` — simpler native Claude Code mechanism when relevant;
+- `bare` — reduced article pipeline when useful for measuring total orchestration lift.
 
-Do not compare against `bare` merely for a dramatic score if production never operates that way. Comparators must answer a real design question.
+Do not use a dramatic but irrelevant comparator. Comparators must answer a real design question.
 
 ## Required closeout
 
-Every completed experiment must produce a concise report.
+Every completed experiment reports:
 
 ### Finding
 
-What concrete failure mode or wasted resource was observed?
+What concrete article-pipeline failure mode or wasted resource was observed?
 
 ### Baseline
 
-What happened before the change, under what environment, and with what confidence?
+What happened before the change, under what environment, and with what evidence level?
 
 ### Hypothesis
 
-Why should the candidate affect the targeted metric?
+Why should the candidate affect the chosen metric?
 
 ### Candidate
 
@@ -972,15 +909,15 @@ What changed, and why was it the smallest credible intervention?
 
 ### Evaluation
 
-What tasks, graders, trials, environment controls, comparators, and budgets were used?
+What briefs, depths, gate decisions, graders, trials, environment controls, comparators, and budgets were used?
 
 ### Results
 
-Report the primary metric, guardrails, efficiency, failure categories, and uncertainty.
+Report QPR or the declared primary metric, hard guardrails, efficiency, failure categories, and uncertainty.
 
 ### Trace audit
 
-What did representative successes/failures show? Was there evidence of grader gaming, contamination, or an alternate explanation?
+What did representative successes/failures show? Was there grader gaming, contamination, source volatility, or another explanation?
 
 ### Decision
 
@@ -992,54 +929,52 @@ What machinery was added, removed, or made unnecessary?
 
 ### Guarantees
 
-Which important guarantees remain intact, and what evidence demonstrates that?
+Which factual/editorial/control-plane guarantees remain intact, and what evidence demonstrates that?
 
 Finish with:
 
-> What measurable or behaviorally demonstrated property is better than the baseline, what important guarantees remain intact, what did the improvement cost, and why is this the simplest mechanism that achieved the result?
+> What measurable article-pipeline property is better than the baseline, what factual/editorial and control-plane guarantees remain intact, what did the improvement cost, and why is this the simplest mechanism that achieved the result?
 
 ## Minimum acceptance checklist
 
-Before retaining a behavior-changing control-plane improvement, verify all applicable items:
-
-- [ ] The failure or waste was concretely reproduced.
-- [ ] Existing repository behavior was inspected before claiming novelty.
-- [ ] The experiment class was declared.
-- [ ] The causal hypothesis was written before implementation.
+- [ ] The failure/waste was concretely reproduced or benchmarked.
+- [ ] Existing behavior and prior pipeline learnings were inspected before claiming novelty.
+- [ ] Experiment class was declared.
+- [ ] Hypothesis was written before implementation.
 - [ ] One primary metric was declared.
-- [ ] A minimum worthwhile effect or non-inferiority margin was declared.
+- [ ] Minimum worthwhile effect/non-inferiority margin was declared.
 - [ ] Hard guardrails were declared.
-- [ ] Baseline environment and configuration were captured.
-- [ ] Baseline and candidate ran in fresh, matched processes.
-- [ ] Persistent state and auto memory were isolated or intentionally controlled.
-- [ ] Regression coverage exists for the targeted behavior.
-- [ ] Capability coverage has enough headroom to measure improvement when applicable.
-- [ ] Adversarial/bypass paths were tested when relevant.
+- [ ] Baseline environment, article briefs, gate decisions, and learning state were captured.
+- [ ] Baseline/candidate ran in fresh matched processes when stochastic behavior mattered.
+- [ ] Persistent state and benchmark contamination were controlled.
+- [ ] Deterministic regression coverage exists for objective changed behavior.
+- [ ] Article capability coverage has headroom when a quality claim is made.
+- [ ] Adversarial/bypass cases were tested when relevant.
 - [ ] Trials were repeated for stochastic behavior.
-- [ ] Infrastructure failures were separated from subject failures.
-- [ ] Complete outcomes and grader evidence were captured.
+- [ ] Source volatility/infrastructure failures were separated from subject failures.
+- [ ] Final article/delivery artifacts and independent grader evidence were captured.
 - [ ] Representative traces were inspected.
 - [ ] Efficiency deltas were measured for Class C/D changes.
 - [ ] Held-out validation was used for high-impact changes when feasible.
-- [ ] The evaluator was not silently changed to favor the candidate.
-- [ ] Repository-level verification passed after the final edit.
-- [ ] The final diff contains no unintended changes.
-- [ ] The result was classified as accepted, rejected, or inconclusive.
-- [ ] Accepted fixes produced durable regression coverage.
-- [ ] The final report answers the required closeout question.
+- [ ] Evaluator changes were not silently conflated with subject improvements.
+- [ ] Deterministic repository verification passed after the final edit.
+- [ ] Final diff contains no unintended article artifacts or benchmark leakage.
+- [ ] Result was classified accepted/rejected/inconclusive.
+- [ ] Accepted fixes produced durable regression/benchmark coverage when practical.
+- [ ] Final report answers the required closeout question.
 
 ## Default posture
 
-The control plane should become stronger by becoming more empirically justified, not merely larger.
+The article control plane should become stronger by producing better qualified articles more reliably, not by accumulating orchestration.
 
 Every mechanism is provisional.
 
-Every guarantee should live at the strongest appropriate enforcement layer.
+Every guarantee belongs at the strongest appropriate control layer.
 
-Every important failure should become reproducible.
+Every important article-pipeline failure should become reproducible or benchmarkable.
 
-Every retained change should improve a measured outcome or remove cost without meaningful regression.
+Every retained change should improve a measured article/control outcome or remove cost without meaningful factual, editorial, or integrity regression.
 
-Every major model or platform improvement should trigger fresh ablation pressure against old scaffolding.
+Every major model/platform improvement should trigger fresh ablation pressure against old scaffolding.
 
 When evidence does not distinguish a more complex design from a simpler one, choose the simpler design.
