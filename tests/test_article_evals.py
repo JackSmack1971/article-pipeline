@@ -3,10 +3,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.evals.claim_citation_grader import compute_claim_metrics
+from scripts.evals.claim_citation_grader import compute_claim_metrics, extract_markdown_citations
 from scripts.evals.editorial_grader import DIMENSIONS, compute_editorial_metrics
 from scripts.evals.qpr_runner import (
     aggregate_arm,
+    dynamic_isolation_guardrails,
     extract_agent_calls,
     load_corpus,
     match_scripted_decision,
@@ -58,9 +59,15 @@ class ClaimCitationMetricsTests(unittest.TestCase):
                 },
             ]
         }
-        metrics = compute_claim_metrics(grade)
+        grade["citations"] = [
+            {"anchor": "A", "url": "https://example.com/a", "integrity": "valid", "nearby_claim_support": "supports"},
+            {"anchor": "B", "url": "https://example.com/b", "integrity": "valid", "nearby_claim_support": "partial"},
+        ]
+        expected = extract_markdown_citations("[A](https://example.com/a) [B](https://example.com/b)")
+        metrics = compute_claim_metrics(grade, expected)
         self.assertEqual(metrics["material_claim_precision"], 0.5)
-        self.assertEqual(metrics["citation_support_rate"], 1.0)
+        self.assertEqual(metrics["citation_support_rate"], 0.5)
+        self.assertEqual(metrics["citation_audit_coverage_rate"], 1.0)
 
 
 class EditorialMetricsTests(unittest.TestCase):
@@ -139,6 +146,34 @@ class QprTests(unittest.TestCase):
         }
         calls = extract_agent_calls(payload)
         self.assertEqual(calls[0]["subagent_type"], "article-skeptic")
+
+    def test_dynamic_isolation_detects_advocate_claim_leak_to_skeptic(self):
+        root = Path(tempfile.mkdtemp())
+        artifacts = root / ".agents" / "artifacts"
+        artifacts.mkdir(parents=True)
+        (artifacts / "pipeline_config.json").write_text(json.dumps({"pipeline": {"adversarial_dialectic": True}}), encoding="utf-8")
+        claim = "This distinctive advocate claim should never be copied into the skeptic delegation prompt verbatim."
+        (artifacts / "advocate_context.md").write_text(f"- **Statement:** {claim}\n", encoding="utf-8")
+        subject = {"turns": [{"agent_calls": [
+            {"subagent_type": "article-advocate", "prompt": "support"},
+            {"subagent_type": "article-skeptic", "prompt": f"challenge this: {claim}"},
+        ]}]}
+        result = dynamic_isolation_guardrails(root, subject)
+        self.assertFalse(result["pass"])
+
+    def test_dynamic_isolation_detects_full_body_leak_to_red_team(self):
+        root = Path(tempfile.mkdtemp())
+        artifacts = root / ".agents" / "artifacts"
+        artifacts.mkdir(parents=True)
+        (artifacts / "pipeline_config.json").write_text(json.dumps({"pipeline": {"red_team": True}}), encoding="utf-8")
+        body = "This is a deliberately long body paragraph containing sensitive supporting argument context that the red team must not receive. " * 2
+        draft = f"# Title\n\n## Body\n\n{body}\n\n## Conclusion\n\nConclusion text."
+        (artifacts / "article_draft.md").write_text(draft, encoding="utf-8")
+        subject = {"turns": [{"agent_calls": [
+            {"subagent_type": "article-red-team", "prompt": body[:150]},
+        ]}]}
+        result = dynamic_isolation_guardrails(root, subject)
+        self.assertFalse(result["pass"])
 
     def test_match_scripted_approval(self):
         brief = self.brief()
