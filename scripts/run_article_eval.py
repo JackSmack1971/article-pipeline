@@ -18,8 +18,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from scripts.article_eval import aggregate_variant, citation_structure_report, qpr_trial, read_json
-from scripts.validate_artifacts import validate
+try:
+    from scripts.article_eval import aggregate_variant, citation_structure_report, qpr_trial, read_json
+    from scripts.validate_artifacts import validate
+except ModuleNotFoundError:  # direct `python scripts/run_article_eval.py`
+    from article_eval import aggregate_variant, citation_structure_report, qpr_trial, read_json
+    from validate_artifacts import validate
 
 
 DEFAULT_RUN_ROOT = Path(".workflow/article-evals")
