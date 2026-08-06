@@ -1,0 +1,106 @@
+[
+  {
+    "id": "simple-evergreen-explainer",
+    "title": "Why Password Managers Still Matter",
+    "topic_prompt": "Write a sourced article explaining why password managers still matter for ordinary consumers, what risks they reduce, what they do not solve, and practical criteria for choosing one without endorsing a specific vendor.",
+    "target_audience": "non-technical consumers who understand basic online accounts but not security architecture",
+    "expected_depth": "SIMPLE",
+    "challenge_tags": ["evergreen", "low-contention", "consumer", "efficiency"],
+    "gate_script": {
+      "thesis_confirmation": "approve the pipeline's proposed thesis if it remains vendor-neutral and emphasizes risk reduction rather than perfect security",
+      "approval": "approved",
+      "postdraft": "accept unless a required gate identifies a material factual or accessibility problem"
+    }
+  },
+  {
+    "id": "standard-quantitative-policy",
+    "title": "Heat Pumps and Household Energy Costs",
+    "topic_prompt": "Write a sourced article on when residential heat pumps lower household energy costs in the United States. Distinguish climate, electricity and fuel prices, building envelope, equipment efficiency, and incentives. Avoid a universal savings claim.",
+    "target_audience": "homeowners comparing major HVAC options who can follow percentages and payback examples",
+    "expected_depth": "STANDARD",
+    "challenge_tags": ["quantitative", "policy", "regional-variation", "current-incentives"],
+    "gate_script": {
+      "thesis_confirmation": "approve a conditional thesis that savings depend on local operating conditions rather than asserting heat pumps are always cheaper",
+      "approval": "approved; present material regional conflicts neutrally",
+      "postdraft": "accept unless a required gate identifies unsupported savings claims"
+    }
+  },
+  {
+    "id": "standard-source-conflict",
+    "title": "Does Remote Work Reduce Productivity?",
+    "topic_prompt": "Write a sourced article evaluating whether remote work reduces productivity. Separate individual output, collaboration, innovation, retention, and management effects. Reconcile conflicting evidence rather than selecting one metric as definitive.",
+    "target_audience": "business leaders and managers making workplace-policy decisions",
+    "expected_depth": "STANDARD",
+    "challenge_tags": ["conflicting-evidence", "management", "measurement", "causality"],
+    "gate_script": {
+      "thesis_confirmation": "approve a thesis that productivity effects are heterogeneous and measurement-dependent",
+      "approval": "approved; unresolved empirical conflicts must remain explicit",
+      "postdraft": "accept unless the article collapses productivity into a single unsupported metric"
+    }
+  },
+  {
+    "id": "standard-current-technical",
+    "title": "Passkeys Versus Passwords for Organizations",
+    "topic_prompt": "Write a sourced article explaining the current practical tradeoffs between passkeys and passwords for organizations. Cover phishing resistance, recovery, device/platform support, deployment complexity, and coexistence with legacy authentication.",
+    "target_audience": "IT and security leaders who understand MFA but are not identity-protocol specialists",
+    "expected_depth": "STANDARD",
+    "challenge_tags": ["technical", "current-platform-support", "security", "terminology"],
+    "gate_script": {
+      "thesis_confirmation": "approve a thesis that passkeys materially improve phishing resistance but migration and recovery design still determine deployment quality",
+      "approval": "approved",
+      "postdraft": "accept unless current platform claims are stale or overstated"
+    }
+  },
+  {
+    "id": "complex-fast-moving-ai",
+    "title": "What Small Businesses Can Actually Automate With AI Agents",
+    "topic_prompt": "Write a sourced article evaluating what small businesses can reliably automate with contemporary AI agents now, versus what still requires close supervision. Distinguish demonstrations from durable production use and include failure modes, economics, and operational controls.",
+    "target_audience": "small-business owners and operations leaders evaluating near-term automation investments",
+    "expected_depth": "COMPLEX",
+    "challenge_tags": ["fast-moving", "AI", "vendor-claims", "economics", "adversarial-research"],
+    "gate_script": {
+      "thesis_confirmation": "approve a thesis that bounded workflows are more dependable than broad autonomous operation unless current evidence strongly supports a different conclusion",
+      "approval": "approved; present material capability disputes neutrally",
+      "postdraft": "address only material red-team findings; polish only high-priority reader gaps"
+    }
+  },
+  {
+    "id": "complex-contentious-health-policy",
+    "title": "What Soda Taxes Change—and What They Do Not",
+    "topic_prompt": "Write a sourced article evaluating the evidence on sugar-sweetened beverage taxes. Separate purchase behavior, consumption, substitution, health outcomes, distributional effects, and use of tax revenue. Distinguish observational findings from causal evidence.",
+    "target_audience": "policy-interested general readers comfortable with research summaries but not econometrics",
+    "expected_depth": "COMPLEX",
+    "challenge_tags": ["contentious", "public-health", "causality", "distributional-effects", "adversarial-research"],
+    "gate_script": {
+      "thesis_confirmation": "approve a thesis proportional to the evidence; do not precommit to either advocacy or opposition",
+      "approval": "approved; retain unresolved causal and distributional conflicts explicitly",
+      "postdraft": "address material red-team findings that identify causal overstatement"
+    }
+  },
+  {
+    "id": "complex-evidence-should-update-thesis",
+    "title": "Are Four-Day Workweeks Ready for Broad Adoption?",
+    "topic_prompt": "Write a sourced article evaluating whether four-day workweeks are ready for broad adoption. Test a starting hypothesis that shorter workweeks generally preserve productivity while improving employee well-being. Actively revise or weaken that hypothesis if sector coverage, selection effects, or trial design do not support broad generalization.",
+    "target_audience": "executives, HR leaders, and policy readers considering organizational adoption",
+    "expected_depth": "COMPLEX",
+    "challenge_tags": ["thesis-update", "selection-effects", "external-validity", "adversarial-research"],
+    "gate_script": {
+      "thesis_confirmation": "confirm the stated starting hypothesis but explicitly authorize evidence-driven weakening",
+      "approval": "approved; if evidence challenges generalization, the final article must say so",
+      "postdraft": "address red-team findings about selection bias or external validity when material"
+    }
+  },
+  {
+    "id": "complex-source-scarcity",
+    "title": "Can Local Governments Measure AI Procurement Risk?",
+    "topic_prompt": "Write a sourced article on how local governments can assess risk when procuring AI systems. Focus on measurable procurement controls, auditability, vendor documentation, evaluation limits, and where evidence is too thin to support confident claims about effectiveness.",
+    "target_audience": "municipal technology, procurement, and policy officials",
+    "expected_depth": "COMPLEX",
+    "challenge_tags": ["source-scarcity", "governance", "measurement", "uncertainty", "adversarial-research"],
+    "gate_script": {
+      "thesis_confirmation": "approve a thesis centered on verifiable procurement controls while requiring explicit uncertainty about outcome effectiveness",
+      "approval": "approved; insufficient evidence must remain visible rather than being filled with generic best practices",
+      "postdraft": "accept unless the article converts weak evidence into confident effectiveness claims"
+    }
+  }
+]
