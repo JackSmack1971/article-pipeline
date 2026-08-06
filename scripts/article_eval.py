@@ -74,8 +74,13 @@ def validate_claim_grade(value: dict[str, Any]) -> None:
             raise ValueError(f"claim judgment {index} has invalid materiality")
         if not isinstance(item.get("claim"), str) or not item["claim"].strip():
             raise ValueError(f"claim judgment {index} requires claim text")
+        citation_url = item.get("citation_url")
+        if citation_url is not None and (not isinstance(citation_url, str) or not citation_url.strip()):
+            raise ValueError(f"claim judgment {index} citation_url must be string or null")
         if not isinstance(item.get("fabricated_citation"), bool):
             raise ValueError(f"claim judgment {index} requires fabricated_citation boolean")
+        if not isinstance(item.get("reason"), str) or not item["reason"].strip():
+            raise ValueError(f"claim judgment {index} requires reason")
     for key in ("disputed_or_outdated_as_settled", "silent_conflict_drift"):
         if not isinstance(value.get(key), bool):
             raise ValueError(f"claim grade requires {key} boolean")
