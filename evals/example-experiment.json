@@ -1,0 +1,19 @@
+{
+  "experiment_id": "cp-YYYYMMDD-example",
+  "trials": [
+    {
+      "variant": "baseline",
+      "brief_id": "standard-source-conflict",
+      "trial": 1,
+      "artifact_root": "/absolute/path/to/baseline-trial-artifacts",
+      "human_rescue": false
+    },
+    {
+      "variant": "candidate",
+      "brief_id": "standard-source-conflict",
+      "trial": 1,
+      "artifact_root": "/absolute/path/to/candidate-trial-artifacts",
+      "human_rescue": false
+    }
+  ]
+}
