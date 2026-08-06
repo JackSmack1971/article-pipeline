@@ -127,7 +127,7 @@ Supported `run_metrics` fields are:
 - `tool_calls`
 - `agent_calls`
 
-All are optional and non-negative.
+All are optional and non-negative. Efficiency medians are computed from the trials that actually provide the corresponding field; keep telemetry collection matched across variants when using efficiency as a decision metric.
 
 ## Prepare blind evaluation packets
 
