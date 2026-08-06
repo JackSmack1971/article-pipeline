@@ -34,6 +34,7 @@ that cannot read evaluator files, hidden tasks, prior results, or grader credent
 - Git
 - Current Claude Code CLI (`claude`)
 - Claude authentication usable from non-interactive `claude -p`
+- For the independent `--bare` graders: `ANTHROPIC_API_KEY` (or an `apiKeyHelper` supplied through explicit grader settings); bare mode does not read OAuth/keychain credentials
 - Network access for article research and the factual/citation grader
 
 The runner uses current Claude Code programmatic features including `-p`, `--output-format json`,
