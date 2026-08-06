@@ -6,14 +6,36 @@
       "brief_id": "standard-source-conflict",
       "trial": 1,
       "artifact_root": "/absolute/path/to/baseline-trial-artifacts",
-      "human_rescue": false
+      "human_rescue": false,
+      "decision_context": {
+        "conflict_policy": "present material unresolved empirical conflicts neutrally"
+      },
+      "run_metrics": {
+        "cost_usd": 0,
+        "wall_time_seconds": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "tool_calls": 0,
+        "agent_calls": 0
+      }
     },
     {
       "variant": "candidate",
       "brief_id": "standard-source-conflict",
       "trial": 1,
       "artifact_root": "/absolute/path/to/candidate-trial-artifacts",
-      "human_rescue": false
+      "human_rescue": false,
+      "decision_context": {
+        "conflict_policy": "present material unresolved empirical conflicts neutrally"
+      },
+      "run_metrics": {
+        "cost_usd": 0,
+        "wall_time_seconds": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "tool_calls": 0,
+        "agent_calls": 0
+      }
     }
   ]
 }
