@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "name": "visible-development-corpus",
+  "briefs": [
+    {
+      "id": "rag-product-managers",
+      "suite_tags": ["stable", "explainer", "simple", "technical"],
+      "topic_brief": "Write a sourced long-form article explaining retrieval-augmented generation (RAG) to product managers who understand software products but are not machine-learning specialists. Explain what RAG is, what problem it solves, the core retrieval/generation flow, where it commonly fails, and when a product team should prefer RAG over relying only on a model's built-in knowledge. Avoid vendor marketing claims unless independently supported.",
+      "target_audience": "Product managers and product leaders with general software literacy but no assumed machine-learning expertise.",
+      "intended_thesis": "RAG is useful when a product needs grounded, updateable knowledge, but it introduces retrieval and evaluation failure modes that teams must design for; the article should let the evidence determine the precise limits.",
+      "allowed_depths": ["SIMPLE", "STANDARD"],
+      "scripted_decisions": {
+        "thesis_confirmation": "confirmed",
+        "approval": "approved — use neutral handling for every conflict not individually specified",
+        "red_team": "address",
+        "reader": "polish",
+        "delivery": "deliver_without"
+      },
+      "max_claims_to_grade": 22
+    },
+    {
+      "id": "heat-pumps-homeowners",
+      "suite_tags": ["stable", "consumer", "simple", "quantitative"],
+      "topic_brief": "Write a sourced long-form article for U.S. homeowners explaining when a modern air-source heat pump can reduce household energy use and operating cost compared with a conventional furnace plus air conditioner. Cover climate, electricity and fuel prices, cold-weather performance, efficiency metrics, installation constraints, and situations where the economics are unfavorable. Do not make a universal savings claim.",
+      "target_audience": "U.S. homeowners evaluating a major HVAC replacement and comfortable with basic household-cost comparisons but not HVAC engineering.",
+      "intended_thesis": "Heat pumps can be a strong efficiency choice, but actual operating-cost savings depend on climate, equipment, installation quality, and local energy prices; the article should make those dependencies explicit.",
+      "allowed_depths": ["SIMPLE", "STANDARD"],
+      "scripted_decisions": {
+        "thesis_confirmation": "confirmed",
+        "approval": "approved — use neutral handling for every conflict not individually specified",
+        "red_team": "address",
+        "reader": "polish",
+        "delivery": "deliver_without"
+      },
+      "max_claims_to_grade": 24
+    },
+    {
+      "id": "remote-work-productivity",
+      "suite_tags": ["contested", "standard", "social-science", "conflicting-evidence"],
+      "topic_brief": "Write a sourced long-form article assessing the evidence on remote and hybrid work's effect on knowledge-worker productivity. Separate fully remote from hybrid arrangements, individual output from team innovation/coordination, measured performance from manager perception, and short-term from long-term effects. Give meaningful weight to credible evidence on both sides rather than forcing a single universal conclusion.",
+      "target_audience": "Executives and operations leaders deciding workplace policy who want an evidence-based synthesis rather than advocacy for office-first or remote-first ideology.",
+      "intended_thesis": "The effect of remote work is heterogeneous across task type, measurement method, and work design; the strongest conclusion should emerge from the evidence rather than a predetermined pro- or anti-remote stance.",
+      "allowed_depths": ["STANDARD", "COMPLEX"],
+      "scripted_decisions": {
+        "thesis_confirmation": "confirmed",
+        "approval": "approved — use neutral handling for every conflict not individually specified",
+        "red_team": "address",
+        "reader": "polish",
+        "delivery": "deliver_without"
+      },
+      "max_claims_to_grade": 28
+    },
+    {
+      "id": "ev-lifecycle-emissions",
+      "suite_tags": ["quantitative", "standard", "environment", "methodology-sensitive"],
+      "topic_brief": "Write a sourced long-form article answering whether battery-electric passenger vehicles generally produce lower lifecycle greenhouse-gas emissions than comparable gasoline vehicles in the United States. Cover vehicle and battery manufacturing, electricity mix, vehicle lifetime, driving efficiency, regional variation, and major assumptions that can change the result. Explain why tailpipe-only comparisons are insufficient and avoid implying one break-even mileage applies everywhere.",
+      "target_audience": "Policy-interested general readers who can follow quantitative comparisons if assumptions and units are clearly explained.",
+      "intended_thesis": "Lifecycle emissions are the correct comparison; the article should quantify the mainstream evidence while showing how grid mix, vehicle size, manufacturing assumptions, and lifetime mileage affect the result.",
+      "allowed_depths": ["STANDARD", "COMPLEX"],
+      "scripted_decisions": {
+        "thesis_confirmation": "confirmed",
+        "approval": "approved — use neutral handling for every conflict not individually specified",
+        "red_team": "address",
+        "reader": "polish",
+        "delivery": "deliver_without"
+      },
+      "max_claims_to_grade": 30
+    },
+    {
+      "id": "nuclear-renewables-grid",
+      "suite_tags": ["complex", "contested", "energy-policy", "conflicting-evidence", "quantitative"],
+      "topic_brief": "Write a sourced long-form article evaluating the claim that advanced economies need substantial nuclear generation to achieve a reliable, deeply decarbonized electricity grid. Compare nuclear with portfolios built around wind, solar, storage, transmission, demand response, and other firm low-carbon resources. Distinguish technical feasibility from cost, build-time, political, and regional constraints. Steelman both the pro-nuclear and nuclear-skeptical evidence before reaching a calibrated conclusion.",
+      "target_audience": "Energy-policy professionals and technically literate readers who expect explicit assumptions, credible counterarguments, and source-quality discipline.",
+      "intended_thesis": "Whether nuclear is 'needed' is a system-design and regional question, not a slogan; the article should identify which claims are robust, which depend on modeling assumptions, and where credible disagreement remains.",
+      "allowed_depths": ["COMPLEX"],
+      "scripted_decisions": {
+        "thesis_confirmation": "confirmed",
+        "approval": "approved — use neutral handling for every conflict not individually specified",
+        "red_team": "address",
+        "reader": "polish",
+        "delivery": "deliver_without"
+      },
+      "max_claims_to_grade": 30
+    },
+    {
+      "id": "open-weight-ai-enterprise",
+      "suite_tags": ["complex", "freshness", "technology", "fast-moving", "decision-support"],
+      "topic_brief": "Write a sourced long-form article, using the latest credible evidence available at run time, assessing when enterprises should consider open-weight language models instead of closed API models for production AI systems. Compare capability, total cost, deployment/control, security and privacy, fine-tuning/customization, operational burden, and model-update risk. Avoid benchmark cherry-picking and clearly date any fast-moving model comparisons.",
+      "target_audience": "Enterprise technology leaders and senior engineers making model-platform decisions, with enough technical background to understand deployment and inference tradeoffs.",
+      "intended_thesis": "Open-weight and closed models optimize different constraints; the article should produce a decision framework grounded in current evidence rather than declare one category universally superior.",
+      "allowed_depths": ["COMPLEX"],
+      "scripted_decisions": {
+        "thesis_confirmation": "confirmed",
+        "approval": "approved — use neutral handling for every conflict not individually specified",
+        "red_team": "address",
+        "reader": "polish",
+        "delivery": "deliver_without"
+      },
+      "max_claims_to_grade": 30
+    },
+    {
+      "id": "perovskite-tandem-commercialization",
+      "suite_tags": ["standard", "emerging-technology", "source-quality", "uncertainty"],
+      "topic_brief": "Write a sourced long-form article assessing how close perovskite-silicon tandem solar cells are to meaningful commercial deployment. Separate laboratory efficiency records from bankable field performance, manufacturing scale, durability, encapsulation, lead-management, certification, and cost. Treat company timelines as claims to verify rather than facts, and distinguish pilot production from mass-market deployment.",
+      "target_audience": "Clean-energy investors and technology strategists who need a realistic commercialization assessment without requiring deep photovoltaic-device expertise.",
+      "intended_thesis": "Perovskite-silicon tandems have compelling efficiency potential, but commercialization should be judged by durability, manufacturability, certification, and real deployment evidence rather than lab records alone.",
+      "allowed_depths": ["STANDARD", "COMPLEX"],
+      "scripted_decisions": {
+        "thesis_confirmation": "confirmed",
+        "approval": "approved — use neutral handling for every conflict not individually specified",
+        "red_team": "address",
+        "reader": "polish",
+        "delivery": "deliver_without"
+      },
+      "max_claims_to_grade": 28
+    },
+    {
+      "id": "ai-chip-export-controls",
+      "suite_tags": ["complex", "freshness", "policy", "geopolitics", "fast-moving", "conflicting-evidence"],
+      "topic_brief": "Write a sourced long-form article, current as of the run date, evaluating whether U.S. export controls on advanced AI chips and semiconductor-manufacturing equipment are materially slowing China's frontier AI capabilities. Separate direct chip access, domestic semiconductor progress, stockpiles and smuggling, algorithmic efficiency, cloud access, and the strategic costs or unintended consequences of controls. Clearly distinguish verified policy facts from uncertain assessments of impact.",
+      "target_audience": "Technology-policy professionals and informed business readers who need a current, evidence-calibrated assessment rather than geopolitical advocacy.",
+      "intended_thesis": "Export controls can constrain specific hardware pathways without mechanically determining overall AI capability; the article should distinguish observed effects from uncertain strategic forecasts and reflect current policy accurately.",
+      "allowed_depths": ["COMPLEX"],
+      "scripted_decisions": {
+        "thesis_confirmation": "confirmed",
+        "approval": "approved — use neutral handling for every conflict not individually specified",
+        "red_team": "address",
+        "reader": "polish",
+        "delivery": "deliver_without"
+      },
+      "max_claims_to_grade": 30
+    }
+  ]
+}
