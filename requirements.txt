@@ -1,3 +1,6 @@
-# Runtime scripts (scripts/*.py) use only the Python standard library.
+# Runtime scripts (scripts/*.py) use only the Python standard library, with
+# one exception: scripts/validate_schemas.py uses jsonschema to check
+# schemas/*.schema.json against committed artifact instances.
 # pytest is required to run scripts/verify.sh / `make verify`.
 pytest>=8.0
+jsonschema>=4.20

@@ -1,0 +1,54 @@
+name: CI
+
+# Deterministic, merge-gating checks only. This intentionally does NOT run
+# scripts/evals/qpr_runner.py (matched baseline/candidate article
+# experiments): that suite is expensive, uses live web search, and belongs
+# to candidate-control-plane evaluation (see CLAUDE.md "Control-plane
+# improvement"), not to every commit. CI proves the deterministic contract
+# holds -- schemas, the canonical artifact fixture, manifest integrity, and
+# the hook-enforcer scripts -- cheaply and on every push/PR.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Deterministic contract checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Hook script syntax (bash -n)
+        run: |
+          bash -n scripts/state_enforcer.sh
+          bash -n scripts/enforce_artifact_contract.sh
+
+      - name: settings.json validity
+        run: python -c "import json; json.load(open('.claude/settings.json')); print('.claude/settings.json ok')"
+
+      - name: Schema validation
+        run: python scripts/validate_schemas.py
+
+      - name: Unit tests
+        run: python -m pytest tests/test_pipeline_runner.py tests/test_migrate_pipeline_state.py tests/test_doc_contracts.py -v
+
+      - name: Canonical fixture + manifest/integrity validation
+        run: python -m pytest tests/test_validate_artifacts.py -v
+
+      - name: Hook-enforcer smoke tests
+        run: python -m pytest tests/test_hook_enforcer_smoke.py -v
+
+      - name: Evaluation-code unit tests
+        run: python -m pytest tests/test_article_evals.py -v

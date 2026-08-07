@@ -24,5 +24,8 @@ echo "ok"
 echo "== settings JSON validity =="
 "$PY" -c "import json; json.load(open('.claude/settings.json')); print('.claude/settings.json ok')"
 
-echo "== python unit tests =="
+echo "== schema contract validation =="
+"$PY" scripts/validate_schemas.py
+
+echo "== python unit tests (incl. canonical fixture, manifest/integrity, hook-enforcer smoke, evaluation-code) =="
 "$PY" -m pytest tests/ -v
