@@ -1,0 +1,3 @@
+# Runtime scripts (scripts/*.py) use only the Python standard library.
+# pytest is required to run scripts/verify.sh / `make verify`.
+pytest>=8.0

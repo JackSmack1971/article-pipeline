@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# enforce_artifact_contract.sh — the settings.local.json entry point for the
+# enforce_artifact_contract.sh — the settings.json entry point for the
 # PreToolUse/PostToolUse artifact-contract gate on .agents/artifacts/*.md
 # writes.
 #

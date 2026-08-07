@@ -2,7 +2,7 @@
 # state_enforcer.sh — Full State Verification layer for the article pipeline's
 # .claude/ control plane.
 #
-# Invoked exclusively by hooks in .claude/settings.local.json. Reads the Claude
+# Invoked exclusively by hooks in .claude/settings.json. Reads the Claude
 # Code hook JSON payload on stdin, writes hook-protocol JSON (continue,
 # hookSpecificOutput, decision, ...) to stdout, and appends one JSON telemetry
 # line per invocation. See diagnostics/002-state-verification-layer.md for the

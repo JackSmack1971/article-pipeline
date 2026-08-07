@@ -1,0 +1,57 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/state_enforcer.sh session-start",
+            "shell": "bash",
+            "timeout": 30,
+            "statusMessage": "State Enforcer: validating pipeline_state.json contract..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/enforce_artifact_contract.sh pre-write",
+            "shell": "bash",
+            "timeout": 15,
+            "statusMessage": "Artifact Contract: checkpointing write target..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/state_enforcer.sh pre-bash",
+            "shell": "bash",
+            "timeout": 10,
+            "statusMessage": "State Enforcer: checking pipeline_state.json access..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/enforce_artifact_contract.sh post-write",
+            "shell": "bash",
+            "timeout": 20,
+            "statusMessage": "Artifact Contract: validating written artifact..."
+          }
+        ]
+      }
+    ]
+  }
+}
