@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-04T11:48:12.825316+00:00",
+  "generated_at": "2026-08-07T01:30:45.685473+00:00",
   "producer": "write_artifact_manifest.py",
   "trace_id": "CCUK5X",
   "artifacts": {
@@ -29,8 +29,8 @@
       "bytes": 12267
     },
     "conflict_decisions.json": {
-      "sha256": "e64e892deadf14337eda60b7c3b029fb2adc2430168bb16e207b4a937b69ca97",
-      "bytes": 830
+      "sha256": "72f93b5a284e661d934cb02433325f25742f350a3ed0fac8fb839fc01d7bb6c1",
+      "bytes": 853
     },
     "conflict_register.md": {
       "sha256": "e6cb0462deb274b8fdb7ec13f4a7f3c6d27ed405604779c75b5717dad9996f58",
@@ -45,8 +45,8 @@
       "bytes": 8964
     },
     "pipeline_config.json": {
-      "sha256": "cbcab6ef6aa3c59511773ad7cbc703a8daea169d795e9a77d4da799bc4040f02",
-      "bytes": 2072
+      "sha256": "67e944ea40d9865f427d4bfc78d347224c10107b52fa1c17fa3162862a182b6c",
+      "bytes": 2095
     },
     "pipeline_learnings.md": {
       "sha256": "6b8680338557eebddb70d26fb9411d9449104c256792ffa67710475c673f248d",
@@ -57,8 +57,8 @@
       "bytes": 2754
     },
     "pipeline_state.json": {
-      "sha256": "b66541bba2617ebd79d41f767ecfbf5a5d15ae489fff8c6626bec47c40279f4e",
-      "bytes": 2822
+      "sha256": "a9cf6d6d2d266a2c8a9fc7177ff359f8d6d1609930fa707f45d7dec216835a64",
+      "bytes": 3999
     },
     "reader_questions.md": {
       "sha256": "5762706607c9b4850cb6acf4ae14e4e306013798aa1ba40a514af0c86ae4e921",
@@ -77,8 +77,8 @@
       "bytes": 3558
     },
     "seo_package.md": {
-      "sha256": "c71a9d9b091f2f2f991d3f57fd5164825a431a8d56df7f9932f4347c14ac28af",
-      "bytes": 8250
+      "sha256": "ff4e08cd4270da817b2e0cb9e71e1bb8edcfed523f46892d6d5b4e7f7af19e43",
+      "bytes": 8405
     },
     "skeptic_evidence.md": {
       "sha256": "9a9704418c18b610d774fceacff96b6e27172057ab057652e8ed6a89f74c3ec1",

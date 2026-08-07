@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://article-pipeline.local/schemas/conflict_decisions.schema.json",
+  "title": "conflict_decisions.json",
+  "description": "Written by the orchestrator immediately after an APPROVAL gate 'approved' decision. Read by @engineer before drafting. Canonical shape documented in .claude/skills/multi-agent-article-pipeline/references/pipeline-schemas.md.",
+  "type": "object",
+  "required": ["schema_version", "gate", "decided_at", "decision", "conflicts"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "gate": { "const": "APPROVAL" },
+    "decided_at": { "type": "string", "format": "date-time" },
+    "decision": { "const": "approved" },
+    "default_handling": { "enum": ["neutral", "author_position", "unresolved"] },
+    "revision_cycle": { "type": "integer", "minimum": 0 },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "vector", "handling"],
+        "properties": {
+          "id": { "type": "string" },
+          "vector": { "type": "string" },
+          "conflict_id": { "type": "string" },
+          "research_vector": { "type": "string" },
+          "advocate_claim_id": { "type": "string" },
+          "skeptic_claim_id": { "type": "string" },
+          "axis": {
+            "enum": ["empirical", "definitional", "temporal", "methodological", "interpretive"]
+          },
+          "handling": { "enum": ["neutral", "author_position", "unresolved"] },
+          "position": { "enum": ["advocate", "skeptic", null] },
+          "note": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

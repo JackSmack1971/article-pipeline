@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://article-pipeline.local/schemas/pipeline_state.schema.json",
+  "title": "pipeline_state.json",
+  "description": "Owned exclusively by scripts/pipeline_runner.py. This is schema_version 2, the ONLY shape new runs may use. schema_version 1 (legacy) nested gate/telemetry data under a 'gates' array and a 'telemetry' object ({revision_cycles, kc_events, gate_expedite_count, consecutive_blocked_audits, tool_degradation}); that split between legacy telemetry.* and top-level counters was the pipeline's ambiguity between 'what does a valid run look like'. v2 collapses everything to flat top-level fields, which is what pipeline_runner.py has always written via record_gate/increment_revision/record_kc_event/record_audit_verdict. A schema_version:1 file found on disk is frozen historical data (predates this contract) and must be migrated with `python scripts/pipeline_runner.py migrate-state` (backed by scripts/migrate_pipeline_state.py) before pipeline_runner.py will operate on it again.",
+  "type": "object",
+  "required": ["schema_version", "stage"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 2,
+      "description": "2 is canonical/current. 1 denotes frozen legacy data that must be migrated before further runner writes."
+    },
+    "stage": {
+      "enum": [
+        "TRIAGE", "RESEARCH", "FACTCHECK", "APPROVAL", "DRAFT", "POSTDRAFT",
+        "SEO", "LEARNING", "COMPLETE", "REVIEW_REQUIRED"
+      ]
+    },
+    "phase_1_complete": { "type": "boolean" },
+
+    "gate_history": {
+      "type": "array",
+      "description": "One entry per human-gate decision (TRIAGE thesis confirm, APPROVAL). Replaces the legacy v1 'gates' array. Extra gate-specific context (e.g. thesis_confidence, conflict_decisions_file) is allowed per entry.",
+      "items": {
+        "type": "object",
+        "required": ["gate", "decision"],
+        "properties": {
+          "gate": { "type": "string" },
+          "decision": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+
+    "revision_cycles": {
+      "type": "object",
+      "description": "gate name -> revision count. Max 3 per gate (scripts/pipeline_runner.py MAX_GATE_REVISIONS); a 4th call is refused with HALT_REQUIRED.",
+      "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 3 }
+    },
+
+    "kc_events": {
+      "type": "array",
+      "description": "Kill-condition check log. Field names are 'code'/'status' (not the legacy v1 'check'/'result').",
+      "items": {
+        "type": "object",
+        "required": ["code", "status"],
+        "properties": {
+          "code": { "enum": ["KC-1", "KC-2", "KC-3", "KC-4", "KC-5", "KC-6"] },
+          "status": { "enum": ["PASS", "HALT"] },
+          "detail": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "gate_expedite_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Incremented on each 'expedite' gate decision. >= 2 triggers a KC-2 tightening warning."
+    },
+
+    "consecutive_blocked_audits": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "Consecutive BLOCKED inline/holistic QA verdicts. Reset to 0 on any non-BLOCKED verdict; reaching 3 requires HALT + escalate."
+    },
+
+    "tool_degradation": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human-readable notes on degraded tool availability observed during the run (e.g. code_execution unavailable)."
+    },
+
+    "draft": {
+      "type": "object",
+      "properties": {
+        "sections_drafted": { "type": "integer", "minimum": 0 },
+        "inline_audit_verdicts": {
+          "type": "array",
+          "items": { "enum": ["PASS", "PASS_WITH_NOTES", "BLOCKED"] }
+        },
+        "holistic_audit_verdict": { "enum": ["PASS", "PASS_WITH_NOTES", "BLOCKED", null] },
+        "word_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+
+    "postdraft": {
+      "type": "object",
+      "properties": {
+        "red_team": {
+          "type": "object",
+          "properties": {
+            "threat_level": { "type": "string" },
+            "decision": { "enum": ["accept", "address", "acknowledge"] },
+            "revised_section": { "type": ["string", "null"] }
+          },
+          "additionalProperties": true
+        },
+        "reader_simulation": {
+          "type": "object",
+          "properties": {
+            "accessibility_rating": { "type": "string" },
+            "high_gaps": { "type": "integer", "minimum": 0 },
+            "decision": { "enum": ["polish", "skip"] },
+            "sections_revised": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "delivery": {
+      "type": "object",
+      "properties": {
+        "author_byline_decision": { "type": "string" },
+        "delivered_artifacts": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+
+    "learning": {
+      "type": "object",
+      "properties": {
+        "pipeline_learnings_entries": { "type": "integer", "minimum": 0 },
+        "knowledge_artifacts_written": { "type": "array", "items": { "type": "string" } },
+        "trace_id": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "artifacts_written": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Bare filenames only, validated by scripts/validate_artifacts.py::artifact_name against absolute paths and traversal."
+    },
+
+    "eeat": {
+      "type": "object",
+      "description": "Structured E-E-A-T checklist status, derived from seo_package.md's 'E-E-A-T block present' row by scripts/pipeline_runner.py::sync_eeat_status (called from finalize()). scripts/validate_artifacts.py reads this field directly instead of pattern-matching prose in seo_package.md, so producer and validator cannot disagree on vocabulary (e.g. 'FAIL' vs 'FAILED'). Absent when seo_package.md doesn't exist or has no matching row (seo_pass disabled).",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["PASS", "FAIL", "NA"] },
+        "reason": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}

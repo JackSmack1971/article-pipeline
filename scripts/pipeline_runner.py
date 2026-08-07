@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Persist safe pipeline stage transitions and final completion state."""
+"""Persist safe pipeline stage transitions and final completion state.
+
+finalize() is the single derived-artifact reconciliation authority: it
+recomputes every value derived from article_draft.md and writes it into
+state, metadata, and SEO before the manifest and validator run."""
 
 from __future__ import annotations
 
@@ -10,11 +14,13 @@ import sys
 from pathlib import Path
 
 try:
-    from scripts.artifact_contract import canonical_word_count
+    from scripts.artifact_contract import canonical_word_count, extract_eeat_status
+    from scripts.migrate_pipeline_state import CURRENT_SCHEMA_VERSION, migrate_file
     from scripts.validate_artifacts import validate
     from scripts.write_artifact_manifest import write_manifest
 except ModuleNotFoundError:  # direct `python scripts/pipeline_runner.py`
-    from artifact_contract import canonical_word_count
+    from artifact_contract import canonical_word_count, extract_eeat_status
+    from migrate_pipeline_state import CURRENT_SCHEMA_VERSION, migrate_file
     from validate_artifacts import validate
     from write_artifact_manifest import write_manifest
 
@@ -45,12 +51,28 @@ def load_state(root: Path) -> dict:
         value = json.load(stream)
     if not isinstance(value, dict):
         raise ValueError("pipeline_state.json must contain a JSON object")
+    version = value.get("schema_version")
+    if version not in (None, CURRENT_SCHEMA_VERSION) or "telemetry" in value or "gates" in value:
+        raise ValueError(
+            "pipeline_state.json is in the legacy schema (schema_version "
+            f"{version!r}, or a 'telemetry'/'gates' key is present) — run "
+            "`python scripts/pipeline_runner.py migrate-state` before further writes"
+        )
     return value
 
 
 def save_state(root: Path, state: dict) -> None:
+    state = dict(state)
+    state["schema_version"] = CURRENT_SCHEMA_VERSION
     state_path(root).write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
     write_manifest(root)
+
+
+def migrate_state(root: Path) -> dict:
+    result = migrate_file(root)
+    if result["status"] == "MIGRATED":
+        write_manifest(root)
+    return result
 
 
 def advance(root: Path, target: str) -> dict:
@@ -67,12 +89,16 @@ def advance(root: Path, target: str) -> dict:
 
 def sync_word_count(root: Path) -> dict:
     """Recompute canonical word count from article_draft.md and write it into
-    pipeline_state.json and the 'Final word count' line in pipeline_metadata.md."""
+    pipeline_state.json, the 'Final word count' line in pipeline_metadata.md,
+    and the '(N words)' figure in seo_package.md's word-count checklist row —
+    the three derived representations that must never disagree with the
+    canonical draft."""
     root = root.resolve()
     draft_path = root / "article_draft.md"
     if not draft_path.is_file():
         raise ValueError(f"missing required artifact: {draft_path.name}")
     count = canonical_word_count(draft_path.read_text(encoding="utf-8"))
+    formatted = f"{count:,}"
 
     state = load_state(root)
     state.setdefault("draft", {})["word_count"] = count
@@ -82,7 +108,6 @@ def sync_word_count(root: Path) -> dict:
     if metadata_path.is_file():
         text = metadata_path.read_text(encoding="utf-8")
         pattern = re.compile(r"(Final word count:\s*)([\d,]+)", re.I)
-        formatted = f"{count:,}"
         if pattern.search(text):
             text = pattern.sub(lambda m: f"{m.group(1)}{formatted}", text, count=1)
         else:
@@ -90,7 +115,35 @@ def sync_word_count(root: Path) -> dict:
         metadata_path.write_text(text, encoding="utf-8")
         write_manifest(root)
 
+    seo_path = root / "seo_package.md"
+    if seo_path.is_file():
+        text = seo_path.read_text(encoding="utf-8")
+        pattern = re.compile(r"(\(\s*)(\d[\d,]*)(\s*words\))", re.I)
+        if pattern.search(text):
+            text = pattern.sub(lambda m: f"{m.group(1)}{formatted}{m.group(3)}", text, count=1)
+            seo_path.write_text(text, encoding="utf-8")
+            write_manifest(root)
+
     return {"word_count": count, "status": "SYNCED"}
+
+
+def sync_eeat_status(root: Path) -> dict:
+    """Parse seo_package.md's E-E-A-T checklist row into a structured
+    {status, reason} value and persist it to pipeline_state.json['eeat'], so
+    the validator checks machine state rather than inferring it from prose."""
+    root = root.resolve()
+    seo_path = root / "seo_package.md"
+    if not seo_path.is_file():
+        return {"status": "NOT_APPLICABLE"}
+
+    eeat = extract_eeat_status(seo_path.read_text(encoding="utf-8"))
+    if eeat is None:
+        return {"status": "NOT_APPLICABLE"}
+
+    state = load_state(root)
+    state["eeat"] = eeat
+    save_state(root, state)
+    return {"eeat": eeat, "status": "SYNCED"}
 
 
 def record_gate(root: Path, gate: str, decision: str) -> dict:
@@ -146,8 +199,15 @@ def record_audit_verdict(root: Path, verdict: str) -> dict:
 
 
 def finalize(root: Path) -> tuple[dict, int]:
+    """The single derived-artifact reconciliation authority: recompute every
+    value derived from article_draft.md (word count, E-E-A-T status) and
+    write it into state/metadata/SEO before the manifest and validator run,
+    so COMPLETE is only reachable when no derived representation disagrees
+    with the canonical draft. Deterministic given unchanged source artifacts
+    — safe to call more than once."""
     root = root.resolve()
     sync_word_count(root)
+    sync_eeat_status(root)
     state = load_state(root)
     state["stage"] = "REVIEW_REQUIRED"
     save_state(root, state)
@@ -161,7 +221,7 @@ def finalize(root: Path) -> tuple[dict, int]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=(
-        "advance", "finalize", "sync-word-count",
+        "advance", "finalize", "sync-word-count", "migrate-state",
         "record-gate", "record-kc-event", "increment-revision", "record-audit-verdict",
     ))
     parser.add_argument("--stage")
@@ -181,6 +241,8 @@ def main() -> int:
             report, code = advance(args.artifact_root, args.stage), 0
         elif args.command == "sync-word-count":
             report, code = sync_word_count(args.artifact_root), 0
+        elif args.command == "migrate-state":
+            report, code = migrate_state(args.artifact_root), 0
         elif args.command == "record-gate":
             if not args.gate or not args.decision:
                 parser.error("record-gate requires --gate and --decision")

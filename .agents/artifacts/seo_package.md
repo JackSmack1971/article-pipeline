@@ -124,7 +124,7 @@
 | 6 | Keyword in intro (first 100 words) | PASS |
 | 7 | Keyword in ≥1 H2 | PASS (4 of 8) |
 | 8 | No keyword stuffing (density < 2.0%) | PASS (body-only 0.84%) |
-| 9 | Word count ≥ 1,800 | PASS (2,151 words) |
+| 9 | Word count ≥ 1,800 | PASS (2,291 words) |
 | 10 | Source Appendix ≥ 3 citations | N/A — project `markdown-style.md` bans trailing citation blocks; 22 phrase-linked citations embedded in body prose serve this function instead |
 | 11 | ≥ 3 internal link suggestions | PASS — see below |
 | 12 | Image alt text populated | PASS — 3 of 3 VIZ-CANDIDATE placeholders have descriptive alt text |

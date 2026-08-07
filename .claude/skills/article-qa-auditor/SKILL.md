@@ -125,7 +125,7 @@ Read complete `article_draft.md` after all sections pass inline.
 **Aggregate Citation Metrics**
 - [ ] Source diversity: no single source > 30% of total citations
 - [ ] Minimum 5 distinct sources for STANDARD/COMPLEX depth articles
-- [ ] Source Appendix present and complete
+- [ ] Every citation is an inline phrase link per `references/markdown-style.md` — no trailing Source Appendix or footnote block (banned by the current citation standard)
 
 **Word Count**
 - [ ] Total within 1,800–3,200 words (or spec override)

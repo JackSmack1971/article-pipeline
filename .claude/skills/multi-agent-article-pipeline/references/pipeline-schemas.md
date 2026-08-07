@@ -1,11 +1,20 @@
 # Pipeline Schemas — v4 Artifact Contracts
 
+Machine-checkable JSON Schema for every artifact below lives in `schemas/` at
+the repo root (`pipeline_config.schema.json`, `pipeline_state.schema.json`,
+`conflict_decisions.schema.json`, `artifact_manifest.schema.json`). Each JSON
+artifact now carries a `schema_version` field; this document is the prose
+companion, not a second source of truth — if the two disagree, `schemas/`
+wins.
+
 ## pipeline_config.json
 
 Written by `article-complexity-triage` at Step 0. Read by all subsequent skills.
+`schema_version: 1`.
 
 ```json
 {
+  "schema_version": 1,
   "pipeline": {
     "depth": "SIMPLE|STANDARD|COMPLEX",
     "adversarial_dialectic": true,
@@ -54,9 +63,11 @@ Written by `article-complexity-triage` at Step 0. Read by all subsequent skills.
 ## conflict_decisions.json
 
 Written by orchestrator after Approval Gate `approved` response. Read by @engineer before drafting.
+`schema_version: 1`.
 
 ```json
 {
+  "schema_version": 1,
   "decisions": [
     {
       "conflict_id": "C-1",
@@ -83,12 +94,62 @@ Written by orchestrator after Approval Gate `approved` response. Read by @engine
 
 ---
 
+## pipeline_state.json
+
+Owned exclusively by `scripts/pipeline_runner.py`. `schema_version: 2` is the
+only shape new runs may use — full field definitions are in
+`schemas/pipeline_state.schema.json`.
+
+```json
+{
+  "schema_version": 2,
+  "stage": "COMPLETE",
+  "gate_history": [
+    {"gate": "TRIAGE_THESIS_CONFIRM", "decision": "confirmed", "thesis_confidence": "MEDIUM"},
+    {"gate": "APPROVAL", "decision": "approved", "conflict_decisions_file": "conflict_decisions.json"}
+  ],
+  "revision_cycles": {"APPROVAL": 0},
+  "kc_events": [{"code": "KC-3", "status": "PASS", "detail": "max single-source share 10%"}],
+  "gate_expedite_count": 0,
+  "consecutive_blocked_audits": 0,
+  "tool_degradation": [],
+  "draft": {"word_count": 2291},
+  "eeat": {"status": "PASS", "reason": null},
+  "artifacts_written": ["pipeline_config.json", "..."]
+}
+```
+
+**Field rules — this is the one place counters and telemetry live:**
+- `gate_history`, `revision_cycles`, `kc_events`, `gate_expedite_count`, and
+  `consecutive_blocked_audits` are always top-level. There is no nested
+  `telemetry` object and no separate `gates` array — schema_version 1
+  (pre-freeze) runs used that legacy shape; it is frozen historical data only.
+- `kc_events` items use `code`/`status` (not the legacy `check`/`result`).
+- A `pipeline_state.json` missing `schema_version`, or carrying a legacy
+  `telemetry`/`gates` key, is refused by `pipeline_runner.py`'s `load_state()`
+  with an explicit error pointing at the migration command below — the
+  runner will not silently interpret an ambiguous shape.
+- Migrate a legacy file with: `python scripts/pipeline_runner.py migrate-state
+  --artifact-root .agents/artifacts --json` (backed by
+  `scripts/migrate_pipeline_state.py`). This is the only sanctioned mutation
+  path per the `.claude/settings.local.json` state-file shield, and it
+  regenerates `artifact_manifest.json` afterward.
+- `eeat`: optional, `{status: "PASS"|"FAIL"|"NA", reason: string|null}`. Written by
+  `pipeline_runner.py::sync_eeat_status` (called from `finalize()`), parsed structurally from
+  `seo_package.md`'s "E-E-A-T block present" checklist row rather than left for
+  `validate_artifacts.py` to infer from prose. Absent when `seo_package.md` doesn't exist yet
+  or `seo_pass` is disabled. `status: FAIL` is the `UNRESOLVED_EDITORIAL_RISK` blocking
+  condition below.
+
+---
+
 ## Persisted run contract
 
 `scripts/pipeline_runner.py` owns persisted stage transitions and finalization;
 `scripts/validate_artifacts.py` is the canonical final gate. It uses the same
 word-count function as `scripts/write_artifact_manifest.py`, verifies
-`artifact_manifest.json` hashes, and returns structured conditions:
+`artifact_manifest.json` hashes (`schema_version: 1`,
+`schemas/artifact_manifest.schema.json`), and returns structured conditions:
 
 - `REQUIRED_INPUT` and `UNRESOLVED_EDITORIAL_RISK` block publication.
 - `OPTIONAL_METADATA` and `TOOL_DEGRADED` are review-only when explicitly
@@ -98,6 +159,22 @@ The runner must run the validator after the final artifact write and before
 the final state write. It may write `COMPLETE` only on `PUBLISHABLE`; otherwise
 it writes `REVIEW_REQUIRED`. A manifest is invalidated by any later artifact
 edit and must be regenerated before completion.
+
+`finalize()` is the single derived-artifact reconciliation authority: it
+recomputes every value derived from `article_draft.md` — canonical word count
+and structured E-E-A-T status — and writes them into `pipeline_state.json`,
+`pipeline_metadata.md`, and `seo_package.md` *before* regenerating
+`artifact_manifest.json` and calling the validator:
+
+```
+article_draft.md → derive canonical values → state / metadata / SEO → manifest → validator → COMPLETE
+```
+
+This is deterministic given unchanged source artifacts, so calling `finalize`
+twice in a row produces the same tree. `validate_artifacts.py` cross-checks
+every derived representation (`draft`, `state`, `metadata`, `seo` word counts;
+`pipeline_state.json['eeat']` vs. `seo_package.md`'s checklist row) and errors
+on any disagreement rather than silently trusting one of them.
 
 ---
 

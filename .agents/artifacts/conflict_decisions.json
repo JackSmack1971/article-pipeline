@@ -1,4 +1,5 @@
 {
+  "schema_version": 1,
   "gate": "APPROVAL",
   "decided_at": "2026-08-03T00:00:00Z",
   "decision": "approved",

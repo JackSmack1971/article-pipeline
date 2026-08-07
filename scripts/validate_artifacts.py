@@ -14,9 +14,21 @@ import sys
 from pathlib import Path
 
 try:
-    from scripts.artifact_contract import TODO_RE, canonical_word_count, verify_manifest
+    from scripts.artifact_contract import (
+        TODO_RE,
+        canonical_word_count,
+        extract_eeat_status,
+        seo_word_count,
+        verify_manifest,
+    )
 except ModuleNotFoundError:  # direct `python scripts/validate_artifacts.py`
-    from artifact_contract import TODO_RE, canonical_word_count, verify_manifest
+    from artifact_contract import (
+        TODO_RE,
+        canonical_word_count,
+        extract_eeat_status,
+        seo_word_count,
+        verify_manifest,
+    )
 
 
 REQUIRED_ALWAYS = {"pipeline_config.json", "pipeline_state.json", "artifact_manifest.json"}
@@ -90,7 +102,10 @@ def validate(root: Path, *, skip_manifest_hash: bool = False) -> tuple[dict, int
     state_words = state.get("draft", {}).get("word_count")
     metadata_path = root / "pipeline_metadata.md"
     metadata_words = metadata_word_count(metadata_path.read_text(encoding="utf-8")) if metadata_path.is_file() else None
-    counts = {"draft": draft_words, "state": state_words, "metadata": metadata_words}
+    seo_path = root / "seo_package.md"
+    seo_text = seo_path.read_text(encoding="utf-8") if seo_path.is_file() else ""
+    seo_words = seo_word_count(seo_text) if seo_text else None
+    counts = {"draft": draft_words, "state": state_words, "metadata": metadata_words, "seo": seo_words}
     known_counts = {value for value in counts.values() if isinstance(value, int)}
     if state.get("stage") == "COMPLETE" and not isinstance(state_words, int):
         errors.append("pipeline_state.json is missing draft.word_count")
@@ -109,8 +124,22 @@ def validate(root: Path, *, skip_manifest_hash: bool = False) -> tuple[dict, int
         if blocking:
             blockers.append(detail)
 
-    seo = (root / "seo_package.md").read_text(encoding="utf-8") if (root / "seo_package.md").is_file() else ""
-    if re.search(r"E-E-A-T[^\n]*FAILED|FAILED[^\n]*E-E-A-T", seo, re.I):
+    try:
+        eeat_from_seo = extract_eeat_status(seo_text) if seo_text else None
+    except ValueError as exc:
+        errors.append(str(exc))
+        eeat_from_seo = None
+    state_eeat = state.get("eeat")
+    if state_eeat is not None and not isinstance(state_eeat, dict):
+        errors.append("pipeline_state.json 'eeat' must be an object")
+        state_eeat = None
+    if eeat_from_seo is not None and state_eeat is not None and eeat_from_seo.get("status") != state_eeat.get("status"):
+        errors.append(
+            "eeat status mismatch: pipeline_state.json says "
+            f"{state_eeat.get('status')!r}, seo_package.md says {eeat_from_seo.get('status')!r}"
+        )
+    effective_eeat = state_eeat or eeat_from_seo
+    if effective_eeat and effective_eeat.get("status") == "FAIL":
         condition("UNRESOLVED_EDITORIAL_RISK", "SEO E-E-A-T failure", True)
     combined = "\n".join(path.read_text(encoding="utf-8") for path in root.glob("*.md"))
     if "[PLACEHOLDER-ONLY]" in combined:

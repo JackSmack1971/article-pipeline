@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://article-pipeline.local/schemas/pipeline_config.schema.json",
+  "title": "pipeline_config.json",
+  "description": "Written once by article-complexity-triage at Step 0. Read by all subsequent skills. Canonical shape documented in .claude/skills/multi-agent-article-pipeline/references/pipeline-schemas.md.",
+  "type": "object",
+  "required": ["schema_version", "pipeline"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "description": "Contract version for this file. 1 is the only defined version."
+    },
+    "pipeline": {
+      "type": "object",
+      "required": [
+        "depth", "adversarial_dialectic", "red_team", "fact_check", "seo_pass",
+        "token_budget", "topic_brief", "thesis", "thesis_confidence"
+      ],
+      "properties": {
+        "depth": { "enum": ["SIMPLE", "STANDARD", "COMPLEX"] },
+        "adversarial_dialectic": { "type": "boolean" },
+        "red_team": { "type": "boolean" },
+        "fact_check": { "type": "boolean" },
+        "seo_pass": { "type": "boolean" },
+        "token_budget": { "type": "integer", "minimum": 0 },
+        "draft_in_phases": { "type": "boolean" },
+        "topic_brief": { "type": "string" },
+        "thesis": { "type": "string" },
+        "thesis_confidence": { "enum": ["HIGH", "MEDIUM"] },
+        "novelty_score": { "type": "number" },
+        "contentiousness_score": { "type": "number" },
+        "scope_score": { "type": "number" },
+        "composite_score": { "type": "number" },
+        "budget_adjusted": { "type": "boolean" },
+        "budget_adjustment_reason": { "type": ["string", "null"] },
+        "word_count_method": { "const": "canonical_markdown_tokens" },
+        "routed_at": { "type": "string", "format": "date-time" },
+        "required_inputs": { "type": "array", "items": { "type": "string" } },
+        "brief_flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "phrase": { "type": "string" },
+              "risk": { "type": "string" },
+              "recommendation": { "type": "string" },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "tool_availability": {
+          "type": "object",
+          "properties": {
+            "code_execution": { "type": "boolean" },
+            "web_search": { "type": "boolean" }
+          },
+          "additionalProperties": true
+        },
+        "author": {
+          "type": ["object", "null"],
+          "properties": {
+            "name": { "type": ["string", "null"] },
+            "credential": { "type": ["string", "null"] },
+            "affiliation": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

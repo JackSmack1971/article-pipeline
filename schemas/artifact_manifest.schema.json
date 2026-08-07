@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://article-pipeline.local/schemas/artifact_manifest.schema.json",
+  "title": "artifact_manifest.json",
+  "description": "Written exclusively by scripts/write_artifact_manifest.py after final artifact writes. Read by scripts/validate_artifacts.py (verify_manifest) as the SHA-256 integrity check for a delivered run. Never hand-edited.",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "producer", "artifacts"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "producer": { "const": "write_artifact_manifest.py" },
+    "trace_id": { "type": ["string", "null"] },
+    "artifacts": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[^\\\\]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["sha256", "bytes"],
+        "additionalProperties": false,
+        "properties": {
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "bytes": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

@@ -13,7 +13,7 @@
 | 7 | Keyword in at least one H2 | Verbatim or semantically equivalent |
 | 8 | No keyword stuffing | Density < 2.0% |
 | 9 | Article word count | ≥ 1,800 words (flags if below) |
-| 10 | Source Appendix present | Must exist and contain ≥ 3 citations |
+| 10 | Citation count via phrase links | ≥ 3 phrase-linked citations to distinct sources embedded in body prose — no trailing Source Appendix or footnote block (banned by `references/markdown-style.md`'s "No trailing citation block" rule) |
 | 11 | Internal link suggestions | ≥ 3 identified (actual URLs not required) |
 | 12 | Image alt text fields | Populated if images referenced; `[TODO]` if none |
 | 13 | No orphan H3s | Every H3 must have a parent H2 |
@@ -73,7 +73,7 @@ the article satisfies the minimum threshold and note what's present vs. missing.
 | **Experience** | First-hand or original research present | FEC data queries, original data analysis, named primary sources with dates |
 | **Expertise** | Author credentials visible near byline | Name + title/affiliation OR "X years covering Y" — not anonymous byline |
 | **Authoritativeness** | ≥ 3 phrase links to T1/T2 sources visible in body prose | Phrase link anchor text must name the org or finding; URL must be absolute and resolve to the correct document |
-| **Trustworthiness** | No unattributed claims; corrections process implied | Source Appendix complete; no `[Unverified]` claims without label |
+| **Trustworthiness** | No unattributed claims; corrections process implied | All claims attributed via phrase links; no `[Unverified]` claims without label |
 
 **Author state check (do this first):** Read `pipeline_config.json.pipeline.author`.
 - **Populated** (`name` set): score the Expertise signal normally against the criteria below.
