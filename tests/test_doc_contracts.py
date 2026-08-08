@@ -24,6 +24,17 @@ class SourceAppendixContractTests(unittest.TestCase):
         text = (REPO_ROOT / ".claude/skills/article-seo-optimizer/references/seo-schema.md").read_text(encoding="utf-8")
         self.assertIn("phrase-linked citations", text)
 
+    def test_claims_table_makes_missing_urls_explicit(self):
+        pipeline = (REPO_ROOT / ".claude/skills/multi-agent-article-pipeline/SKILL.md").read_text(encoding="utf-8")
+        personas = (REPO_ROOT / ".claude/skills/multi-agent-article-pipeline/references/personas.md").read_text(encoding="utf-8")
+
+        self.assertIn("| Claim ID | Final Value | Source URL | URL Status |", pipeline)
+        self.assertIn("| ADV-9 | [original claim] | — | URL-MISSING |", pipeline)
+        self.assertIn("`URL Status` is required for every row", pipeline)
+        self.assertIn("publisher homepage, database homepage, search URL, or guessed URL", pipeline)
+        self.assertIn('that row\'s `URL Status` is `AVAILABLE`', personas)
+        self.assertIn("cite by attribution only", personas)
+
 
 if __name__ == "__main__":
     unittest.main()

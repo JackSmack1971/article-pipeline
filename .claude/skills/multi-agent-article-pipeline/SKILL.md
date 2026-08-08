@@ -147,13 +147,19 @@ by section, for use by @engineer during drafting:
 ```markdown
 # Claims for Drafting
 
-| Claim ID | Final Value | Source URL | Suggested Anchor | Section | Status | PosteriorConfidence |
-|:---------|:-----------|:-----------|:----------------|:--------|:-------|:-------------------|
-| ADV-1 | 67% of respondents... | https://prri.org/... | PRRI survey found 67% of respondents | §Polling Gap | VERIFIED | HIGH (0.91) |
-| ADV-5 | $2.4M gap | https://fec.gov/... | FEC filings show a $2.4M contribution gap | §FEC Analysis | VERIFIED-UPDATED (was $2.1M) | HIGH (0.95) |
-| SKP-2 | Study found no causal link | https://doi.org/... | [study title†] found no causal link | §Limitations | VERIFIED | MEDIUM (0.74) |
-| ADV-9 | [original claim] | URL-MISSING | — | §Rhetoric | UNVERIFIABLE | LOW (0.30) |
+| Claim ID | Final Value | Source URL | URL Status | Suggested Anchor | Section | Status | PosteriorConfidence |
+|:---------|:-----------|:-----------|:-----------|:----------------|:--------|:-------|:-------------------|
+| ADV-1 | 67% of respondents... | https://prri.org/... | AVAILABLE | PRRI survey found 67% of respondents | §Polling Gap | VERIFIED | HIGH (0.91) |
+| ADV-5 | $2.4M gap | https://fec.gov/... | AVAILABLE | FEC filings show a $2.4M contribution gap | §FEC Analysis | VERIFIED-UPDATED (was $2.1M) | HIGH (0.95) |
+| SKP-2 | Study found no causal link | https://doi.org/... | AVAILABLE | [study title†] found no causal link | §Limitations | VERIFIED | MEDIUM (0.74) |
+| ADV-9 | [original claim] | — | URL-MISSING | — | §Rhetoric | UNVERIFIABLE | LOW (0.30) |
 ```
+
+`URL Status` is required for every row and may be only `AVAILABLE` or
+`URL-MISSING`. When it is `URL-MISSING`, `Source URL` must be `—` and the
+claim must be cited by attribution only. @engineer must never substitute a
+publisher homepage, database homepage, search URL, or guessed URL for a
+missing retrievable source URL.
 
 **PosteriorConfidence** is assigned by @fact-checker during Phase 2 verification:
 - HIGH (0.80–1.00): Verified against T1/T2, no contradicting evidence
