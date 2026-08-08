@@ -53,7 +53,14 @@ class HookEnforcerSmokeTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
 
         (self.tmp / "scripts").mkdir()
-        for name in ("state_enforcer.sh", "validate_artifacts.py", "artifact_contract.py"):
+        for name in (
+            "state_enforcer.sh",
+            "validate_artifacts.py",
+            "artifact_contract.py",
+            "pipeline_runner.py",
+            "migrate_pipeline_state.py",
+            "write_artifact_manifest.py",
+        ):
             shutil.copy2(SCRIPTS_DIR / name, self.tmp / "scripts" / name)
 
         artifacts = self.tmp / ".agents" / "artifacts"
@@ -129,6 +136,48 @@ class HookEnforcerSmokeTests(unittest.TestCase):
         self.assertEqual(output.get("decision"), "block")
         self.assertIn("empty", output["reason"])
         self.assertEqual(draft.read_text(encoding="utf-8"), "one two")  # restored from backup
+
+    def test_post_write_auto_syncs_word_count_on_legitimate_draft_edit(self):
+        # Regression test for the edit-then-sync deadlock: a legitimate edit to
+        # article_draft.md that changes its word count must NOT be rolled back
+        # just because pipeline_state.json hasn't been reconciled yet -- the
+        # hook should auto-run the same `pipeline_runner.py sync-word-count`
+        # the pipeline's own "polish"/"address" protocol calls next anyway.
+        draft = self.artifacts / "article_draft.md"
+        payload = {
+            "tool_input": {"file_path": str(draft)},
+            "tool_response": {"success": True},
+        }
+        run_hook(self.tmp, "pre-write", payload)  # seed a backup of "one two" (2 words)
+        draft.write_text("one two three four", encoding="utf-8")  # legitimate edit -> 4 words
+        result = run_hook(self.tmp, "post-write", payload)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        output = json.loads(result.stdout)
+        self.assertNotEqual(output.get("decision"), "block", output)
+        self.assertEqual(draft.read_text(encoding="utf-8"), "one two three four")  # not rolled back
+
+        state = json.loads((self.artifacts / "pipeline_state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["draft"]["word_count"], 4)  # reconciled by the auto-sync
+        metadata = (self.artifacts / "pipeline_metadata.md").read_text(encoding="utf-8")
+        self.assertIn("Final word count: 4", metadata)  # sync-word-count updates this too
+
+    def test_post_write_still_rolls_back_a_genuine_metadata_word_count_error(self):
+        # pipeline_metadata.md's word count is hand-authored prose, not derived
+        # from article_draft.md, so a mismatch there can be a real authoring
+        # bug -- auto-sync must stay scoped to article_draft.md only.
+        metadata = self.artifacts / "pipeline_metadata.md"
+        payload = {
+            "tool_input": {"file_path": str(metadata)},
+            "tool_response": {"success": True},
+        }
+        run_hook(self.tmp, "pre-write", payload)  # seed a backup of "Final word count: 2"
+        metadata.write_text("Final word count: 99", encoding="utf-8")  # wrong vs. draft's 2 words
+        result = run_hook(self.tmp, "post-write", payload)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        output = json.loads(result.stdout)
+        self.assertEqual(output.get("decision"), "block")
+        self.assertIn("word-count mismatch", output["reason"])
+        self.assertEqual(metadata.read_text(encoding="utf-8"), "Final word count: 2")  # restored
 
 
 if __name__ == "__main__":
