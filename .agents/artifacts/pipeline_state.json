@@ -1,5 +1,5 @@
 {
-  "stage": "APPROVAL",
+  "stage": "COMPLETE",
   "gate_history": [
     {
       "gate": "TRIAGE_THESIS_CONFIRM",
@@ -22,5 +22,13 @@
       "detail": "0/7 vectors INSUFFICIENT on either stream"
     }
   ],
-  "schema_version": 2
+  "schema_version": 2,
+  "consecutive_blocked_audits": 0,
+  "draft": {
+    "word_count": 3373
+  },
+  "eeat": {
+    "status": "NA",
+    "reason": null
+  }
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-08T12:05:39.845464+00:00",
+  "generated_at": "2026-08-08T12:34:09.330575+00:00",
   "producer": "write_artifact_manifest.py",
   "trace_id": null,
   "artifacts": {
@@ -8,9 +8,21 @@
       "sha256": "b38be59dfe1d18de35d5c397bbb5d6ef42e56721002a6071d592663594f22f8e",
       "bytes": 33170
     },
+    "article_draft.md": {
+      "sha256": "f283599da1b63701006ebc0e19bb8de9dc53d272886964719a9d2e2210b28829",
+      "bytes": 26571
+    },
     "article_spec.md": {
       "sha256": "0d652c9b10a4923d3dcbbdaeea7d448177fcb94d8fce647cf220c5fa13520342",
       "bytes": 8992
+    },
+    "audit_log.md": {
+      "sha256": "19411ef55c6e62a80cc7a00c1e1b2683ff517485cafc9b19a3af6f47be2278bf",
+      "bytes": 6861
+    },
+    "audit_report.md": {
+      "sha256": "351cb14a2f50f151b36d2a471bd833b7d38fa68a0c5da22597751a9c4c188094",
+      "bytes": 4929
     },
     "claims_for_drafting.md": {
       "sha256": "0131fc721e6f667ab8c5f24f4ad102e768d03f6e822d6e31945aeb4064846bd7",
@@ -33,12 +45,24 @@
       "bytes": 2454
     },
     "pipeline_learnings.md": {
-      "sha256": "6b8680338557eebddb70d26fb9411d9449104c256792ffa67710475c673f248d",
-      "bytes": 2688
+      "sha256": "bd64b83e5cd7f85be02c06d764ff4646130ef4a16b6a2fbe6ad8c32e80237523",
+      "bytes": 8366
+    },
+    "pipeline_metadata.md": {
+      "sha256": "a4b2a28d2fe04d05ed34f49f3a9fa8aa885a3598f3a02a5739e546f4b2eba77a",
+      "bytes": 5200
     },
     "pipeline_state.json": {
-      "sha256": "4bfbb71fd5ec07caa3f72c2911b4795b0da41d581377318b2ba6122e3e9c0540",
-      "bytes": 558
+      "sha256": "99db86eb89072f28d3469c42e9ecb069e4a1e6a5c48beac8e7f3feb1b7486273",
+      "bytes": 698
+    },
+    "reader_questions.md": {
+      "sha256": "c1cec894c32fbbd377f10d9cd851a96e5ac3534b1b5b45f61a948803bdece75a",
+      "bytes": 5540
+    },
+    "red_team_report.md": {
+      "sha256": "08f949cce761fbb495b151a8a568518bb87b44211c2d47fd18ab52e0cd47ab65",
+      "bytes": 13932
     },
     "research_context.md": {
       "sha256": "95cfc12e99bb2fe088ea3665095969cb36a96c1a93ce166d2f95825995e389dd",
@@ -47,6 +71,10 @@
     "research_context_summary.md": {
       "sha256": "9a20c391bd23f53a42786b2c9d488ccf2a9fac9f9bfee55b203687fa633f3f9a",
       "bytes": 5516
+    },
+    "seo_package.md": {
+      "sha256": "f3c94120af1e34d2316c21ae8abd1e66fbdb587a87f9c6da6b963f9d2fc13a65",
+      "bytes": 11232
     },
     "skeptic_evidence.md": {
       "sha256": "60574167a28a7faab47ebcce4cdb0cc1b4e7f27875f13fba70a13aa74ceafe65",
