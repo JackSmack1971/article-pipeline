@@ -178,6 +178,8 @@ During review, hunt:
 
 Delete orchestration that does not improve measured outcomes. A shorter workflow with a stronger oracle is usually preferable to a larger workflow with weak arbitration.
 
+Completion criterion: each failure-mode category above has been checked against the actual script (not recalled from memory), and every instance found is either fixed or explicitly justified before the workflow is declared done.
+
 ## Progressive disclosure
 
 Read these only when the branch needs them:

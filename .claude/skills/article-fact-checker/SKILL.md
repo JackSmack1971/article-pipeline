@@ -5,7 +5,7 @@ description: >
   begins. Operating as @fact-checker persona, queries web search for each HIGH and MEDIUM
   confidence claim in research_context.md, assigns a verification verdict, clears [Unverified]
   flags or escalates to [DISPUTED], and writes fact_check_report.md. Triggers on: fact check
-  gate, pre-draft verification, claim verification, source validation, verify research claims.
+  gate, pre-draft verification, source validation, verify research claims.
   Activates automatically at Step 1.5 of the article generation pipeline when fact_check is
   enabled in pipeline_config.json. Do NOT trigger for writing, auditing, SEO, or post-draft
   tasks.
@@ -48,18 +48,16 @@ prioritize: (1) claims cited in the introduction/conclusion sections of `article
 
 ## Phase 2: Verification Passes
 
+Before searching, consult `references/verification-protocol.md` for source-tier weights
+(T1–T4), the search-query pattern for this claim's type, and the freshness threshold that
+applies.
+
 For each claim in the queue:
 
 1. Execute a targeted web search: query = `[claim core assertion] site:authoritative OR [source domain]`
-2. **Social post platform verification (runs before tier assignment):** If the source URL
-   for a claim is a social media post, verify the URL domain matches the attributed platform:
-   - Attribution says "X / Twitter" → URL must be `x.com` or `twitter.com`
-   - Attribution says "LinkedIn" → URL must be `linkedin.com`
-   - Attribution says "Bluesky" → URL must be `bsky.app`
-   - Attribution says "Substack" → URL must contain `substack.com`
-   If domain does not match attributed platform → verdict `[DISPUTED]` immediately,
-   regardless of content. The citation is structurally incorrect.
-   Flag: `[PLATFORM-MISMATCH] Attributed to [platform], URL is [domain]`
+2. **Social post platform verification (runs before tier assignment):** check the source URL
+   domain against the attributed platform per `references/verification-protocol.md` (Social
+   post claims). Domain mismatch → verdict `[DISPUTED]` immediately, flag `[PLATFORM-MISMATCH]`.
 3. Assign verdict:
 
 | Verdict | Criteria |
@@ -70,7 +68,7 @@ For each claim in the queue:
 | `[DISPUTED]` | Secondary source directly contradicts the claim. Requires human decision. |
 | `[OUTDATED]` | Claim was accurate historically but is no longer current. Must be updated or cut. |
 
-3. For `[DISPUTED]` and `[OUTDATED]`: escalate to `dispute_register.md` (see Phase 3).
+4. For `[DISPUTED]` and `[OUTDATED]`: escalate to `dispute_register.md` (see Phase 3).
 
 ```markdown
 ### VQ-[N]: [ADV/SKP ID]

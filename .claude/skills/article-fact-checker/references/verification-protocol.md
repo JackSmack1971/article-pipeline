@@ -27,6 +27,7 @@
 **Social post claims** (quotes or statements sourced from social media):
 - Before any other verification: check URL domain against attributed platform.
   `x.com` or `twitter.com` = X/Twitter. `linkedin.com` = LinkedIn. `bsky.app` = Bluesky.
+  `substack.com` (domain contains it) = Substack.
   Domain mismatch → `[PLATFORM-MISMATCH]` → DISPUTED immediately.
 - Verify the post exists at the URL (not deleted, not a quote-post misattribution).
 - Verify the attributed account is the verified/official account of the named person or org.

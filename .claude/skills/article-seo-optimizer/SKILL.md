@@ -43,6 +43,9 @@ Read `article_draft.md` and `article_spec.md`.
    - Body-only target range: 0.8%–1.5%. Flag if outside range.
    - Report both total density and body-only density in `seo_package.md` when `is_topic_title: true`.
      Total density is informational only; body-only density is the operative gate.
+   - Check the result against the CRITICAL escalation threshold and secondary-keyword ranges in
+     `references/seo-schema.md` Keyword Density Standards — the checklist's item 8 (<2.0%) is a
+     separate, lower bar.
 5. Check keyword in: Title H1, first 100 words of body, at least one H2, image alt text (if any),
    conclusion paragraph.
 
@@ -60,14 +63,14 @@ Generate meta description:
 - States what the reader will learn or gain
 - Ends with implicit or explicit call to action
 
-Generate URL slug:
-- Primary keyword in kebab-case
-- Max 5 words
-- No stop words, no dates
+Generate URL slug per `references/seo-schema.md` Slug Construction Rules.
 
 ## Phase 3: Structured Data (JSON-LD)
 
 Generate three JSON-LD blocks:
+
+Compute `wordCount` per `references/seo-schema.md` JSON-LD Validation Notes — use the
+pipeline's canonical count, not the body-only count from Phase 1.
 
 ### Article / BlogPosting
 ```json
@@ -113,9 +116,8 @@ Output pass/fail per item.
 - List all external domains linked. Flag any domain below T2 tier.
 
 ## E-E-A-T Audit
-- Read `pipeline_config.json.pipeline.author` first. If explicitly `null`, item 17's Expertise
-  signal is N/A (declared project convention), not FAIL — see `references/seo-schema.md`
-  "Author state check."
+- Read `pipeline_config.json.pipeline.author` first, then follow the Author state check in
+  `references/seo-schema.md` for how null-author affects item 17.
 - Score all four signals against `references/seo-schema.md` E-E-A-T Standards table.
 - If all (applicable) signals PASS → confirm in `seo_package.md`
 - If any FAIL → write "E-E-A-T Gaps" section specifying signal, current state, required edit.

@@ -25,31 +25,34 @@ description: >
 
 ### Audit Checklist (per section)
 
-Load `references/audit-checklist.md` for the full rubric. Key checks:
+Severity tags below are authoritative for the SECTION PASS/BLOCKED verdict — no external lookup
+is required on a normal run. See `references/audit-checklist.md` for the Severity Definitions
+table and elaboration not needed on every run (e.g. the multi-document phrase-link spot-check
+method).
 
 **Factual Accuracy**
-- [ ] Every factual claim maps to a claim ID in `research_context.md`
-- [ ] Statistical values match `fact_check_report.md` VERIFIED-UPDATED entries (not originals)
-- [ ] No claims from [INSUFFICIENT] vectors presented as established fact
-- [ ] No `[Unverified]` claims without explicit `[Unverified]` label in prose
+- [ ] Every factual claim maps to a claim ID in `research_context.md` (`[CRITICAL]`)
+- [ ] Statistical values match `fact_check_report.md` VERIFIED-UPDATED entries, not originals (`[CRITICAL]`)
+- [ ] No claims from [INSUFFICIENT] vectors presented as established fact (`[CRITICAL]`)
+- [ ] Every claim below MEDIUM confidence carries its `[Unverified]` label inline in prose (`[MAJOR]`)
 
 **Citation Integrity**
 - [ ] Every factual assertion is cited using a phrase link: `[meaningful anchor text](https://absolute-url)`.
       The anchor text must be the natural phrase in prose that carries the claim — not a naked URL,
-      not `[Source]`, not `[1]`. If no URL is available for a source, flag `[URL-MISSING]`.
+      not `[Source]`, not `[1]` (`[MAJOR]`). If no URL is available for a source, flag `[URL-MISSING]` (`[MAJOR]`).
 - [ ] All phrase link URLs are absolute (`https://`) — no relative paths (`[MAJOR]`).
 - [ ] Anchor text is meaningful and descriptive — generic anchors like "here", "this study",
       "source", or bare numbers are `[STYLE]`.
 - [ ] PosteriorConfidence qualifiers correctly applied per `claims_for_drafting.md`:
       MEDIUM claims include source attribution qualifier ("according to [source]" or equivalent).
       LOW/UNVERIFIABLE claims carry inline caveat. Missing qualifier on MEDIUM or LOW → `[MAJOR]`.
-- [ ] Legislation/policy acronyms have mandatory inline definition on first use
-- [ ] T3 citations marked `†` with documented T1/T2 re-search attempt
+- [ ] Legislation/policy acronyms have mandatory inline definition on first use (`[MAJOR]`)
+- [ ] T3 citations marked `†` with documented T1/T2 re-search attempt (`[MINOR]`)
 
 **Conflict Handling**
-- [ ] [CONFLICTING] claims handled per `conflict_decisions.json` (not improvised)
-- [ ] Sections closing with "remains contested" must identify the structural incompatibility axis
-- [ ] No silent conflict resolution (one side adopted without disclosure)
+- [ ] [CONFLICTING] claims handled per `conflict_decisions.json`, not improvised (`[CRITICAL]`)
+- [ ] Sections closing with "remains contested" must identify the structural incompatibility axis (`[MAJOR]`)
+- [ ] No silent conflict resolution — one side adopted without disclosure (`[CRITICAL]`)
 - [ ] Unfalsifiable conclusion check: Does any section make a causal claim that the article's own
       evidentiary standard would reject if applied to an opponent? (e.g., "rhetoric X caused violence Y"
       when the thesis argues that such causal claims are applied asymmetrically and lack evidentiary
@@ -57,13 +60,15 @@ Load `references/audit-checklist.md` for the full rubric. Key checks:
       causal framing to correlation + pattern before advancing.
 
 **Style Guide Compliance**
-- [ ] No prohibited patterns (meta-narration, AI-tell phrases, rhetorical questions as openers)
-- [ ] Bold used for key terms on first introduction only
-- [ ] No unattributed superlatives
+- [ ] No meta-narration, e.g. "In this article we will explore..." (`[MAJOR]`)
+- [ ] No AI-tell phrases or rhetorical questions as section openers (`[STYLE]`)
+- [ ] Bold used for key terms on first introduction only (`[STYLE]`)
+- [ ] No unattributed superlatives (`[STYLE]`)
 
 **Structural**
-- [ ] Section matches spec scope and word budget (±15% tolerance)
-- [ ] Topic sentence leads the first paragraph
+- [ ] Section matches spec scope (`[MAJOR]` if deviates materially) and word budget — 15–30% over
+      is `[MINOR]`, > 30% over is `[MAJOR]`.
+- [ ] Topic sentence leads the first paragraph (`[MINOR]`)
 - [ ] Section contains ≥ 1 H3 subsection unless spec word budget for this section is < 300 words.
       Absence of H3 in a full-length section → `[MAJOR]`.
 - [ ] If `article_spec.md` marks this section `[VIZ-CANDIDATE]`, the image placeholder block
@@ -113,27 +118,27 @@ Read complete `article_draft.md` after all sections pass inline.
 ### Holistic Checklist
 
 **Narrative Arc**
-- [ ] Thesis stated explicitly in introduction
-- [ ] Thesis reflected or resolved in conclusion
-- [ ] Section sequence builds logically (no orphaned arguments)
+- [ ] Thesis stated explicitly in introduction (`[CRITICAL]`)
+- [ ] Thesis reflected or resolved in conclusion (`[MAJOR]`)
+- [ ] Section sequence builds logically — no orphaned arguments (`[MINOR]`)
 
 **Cross-Section Coherence**
-- [ ] No contradictory claims between sections
-- [ ] No repeated identical sentences or paragraphs
-- [ ] Transitions between sections are explicit (no abrupt topic jumps)
+- [ ] No contradictory claims between sections (`[CRITICAL]`)
+- [ ] No repeated identical sentences or paragraphs (`[MINOR]`)
+- [ ] Transitions between sections are explicit — no abrupt topic jumps (`[STYLE]`)
 
 **Aggregate Citation Metrics**
-- [ ] Source diversity: no single source > 30% of total citations
-- [ ] Minimum 5 distinct sources for STANDARD/COMPLEX depth articles
-- [ ] Every citation is an inline phrase link per `references/markdown-style.md` — no trailing Source Appendix or footnote block (banned by the current citation standard)
+- [ ] Source diversity: no single source > 30% of total citations (`[MAJOR]`)
+- [ ] Minimum 5 distinct sources for STANDARD/COMPLEX depth articles (`[MAJOR]`)
+- [ ] Every citation is an inline phrase link per `references/markdown-style.md` — no trailing Source Appendix or footnote block, banned by the current citation standard (`[MAJOR]`)
 
 **Word Count**
-- [ ] Total within 1,800–3,200 words (or spec override)
-- [ ] No section > 30% over its spec word budget
+- [ ] Total within 1,800–3,200 words, or spec override (`[MINOR]`)
+- [ ] No section > 30% over its spec word budget (`[MAJOR]`)
 
 **Conflict Resolution Audit**
-- [ ] Every item in `conflict_register.md` is addressed in the draft
-- [ ] No new conflicts introduced in prose that weren't in the register
+- [ ] Every item in `conflict_register.md` is addressed in the draft (`[CRITICAL]`)
+- [ ] No new conflicts introduced in prose that weren't in the register (`[MAJOR]`)
 
 ### Publication Readiness Gate (run before holistic verdict)
 

@@ -4,10 +4,9 @@ description: >
   Scores an article topic brief across novelty, contentiousness, and scope dimensions
   to route the pipeline to SIMPLE, STANDARD, or COMPLEX depth. Reads pipeline_learnings.md
   to apply cross-run calibration before scoring. Writes pipeline_config.json with all
-  routing flags, token budget, and thesis confidence level. Triggers on: complexity triage,
-  pipeline routing, topic scoring, depth classification, article pipeline start. Required
-  first step before any article generation pipeline run. Do NOT use standalone for research,
-  writing, auditing, or SEO tasks.
+  routing flags, token budget, and thesis confidence level. Triggers on: complexity triage /
+  depth routing, article pipeline start. Required as the first, and only the first, step of
+  an article generation pipeline run.
 ---
 
 # Article Complexity Triage
@@ -25,6 +24,10 @@ Before scoring, read `pipeline_learnings.md` (project file):
 **[CALIBRATION] entries** — override default dimension weights:
 - Scan for `novelty_bias` values. Apply additive adjustment to novelty raw score before composite calculation.
 - Scan for `budget_kc1_topics` — if current brief matches listed keywords, apply +8k budget ceiling.
+  When this bump is applied, set `budget_adjusted: true` and `budget_adjustment_reason` to the
+  specific rule that fired (e.g. `KC-1 topic match: +8000`) in the Step 4 output. If any
+  THRESHOLD_ADJUST budget change below is applied instead, use that rule's text as the reason.
+  Otherwise leave both fields at their defaults (`false` / `null`).
 
 **[THRESHOLD_ADJUST] entries** — auto-adjust routing thresholds:
 - Require ≥ 3 matching entries before applying any adjustment.
@@ -104,7 +107,7 @@ Score each dimension 1–5 using the rubric in `references/triage-rubric.md`.
 | 2.5 – 3.7 | STANDARD | true | false | true | true | 32,000 |
 | 3.8 – 5.0 | COMPLEX | true | true | true | true | 48,000 |
 
-Token budget increases 8k if pipeline_learnings.md contains a KC-1 entry for similar topics.
+Token budget may already include the +8k KC-1 bump applied in Step 0; do not reapply it here.
 
 **COMPLEX session budget note:** When Red Team and SEO audit gate are both active, pipeline
 execution requires ≥10,000 session tokens. If the session environment caps below that, note
@@ -168,7 +171,7 @@ drafting through delivery in session 2.
 - `web_search: false` → fact-check gate auto-disabled regardless of `fact_check` flag;
   runner logs `[TOOL-UNAVAILABLE: web_search — fact_check disabled]` to `pipeline_metadata.md`.
 
-All fields required. No partial writes.
+All fields required.
 
 ## Step 5: Confirm to User
 

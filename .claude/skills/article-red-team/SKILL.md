@@ -20,17 +20,21 @@ Post-draft adversarial challenge. The human decides whether the attack warrants 
 
 ## Delegation
 
+Before delegating, read `references/attack-vectors.md` in full.
+
 **Delegate to the `article-red-team` subagent** rather than operating as @adversary in this
-context. Pass in the delegation prompt ONLY:
+context. Pass in the delegation prompt ONLY these items, verbatim, with no summary or
+paraphrase of the rest of the article body:
 1. The thesis statement (from `article_spec.md` line 1)
 2. The conclusion section text (final section of `article_draft.md`)
+3. The "Standing Heuristics" section of `references/attack-vectors.md`, included verbatim
 
-Do not pass, summarize, or paraphrase the rest of the article body. The subagent has no
-`Read` tool and no `Write` tool — it has no filesystem path to `article_draft.md` even if it
-wanted one, and it returns its report as its final message rather than persisting it itself.
-This is a capability boundary, not a prompt instruction: anchoring on the author's arguments
-would produce a weaker, less useful red team, so the constraint is enforced by what the
-worker can reach, not by what it's told not to look at.
+The subagent has no `Read` tool and no `Write` tool — it has no filesystem path to
+`article_draft.md` or `references/attack-vectors.md` even if it wanted one, and it returns
+its report as its final message rather than persisting it itself. This is a capability
+boundary, not a prompt instruction: anchoring on the author's arguments would produce a
+weaker, less useful red team, so the constraint is enforced by what the worker can reach,
+not by what it's told not to look at.
 
 The subagent runs the attack across three vectors (logical, empirical via `WebSearch`, and
 framing) and returns a structured Red Team Report — see `.claude/agents/article-red-team.md`

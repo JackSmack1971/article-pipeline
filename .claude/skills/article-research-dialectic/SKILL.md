@@ -6,10 +6,10 @@ description: >
   then synthesizes into a conflict-mapped research context and article specification.
   @skeptic may access source URLs (not claims) from advocate output to prevent redundant
   retrieval while preserving anchoring isolation. Enforces KC-3 and KC-6 kill conditions.
-  Triggers on: adversarial research, research dialectic, advocate and skeptic research,
-  find supporting and counter evidence, thesis-based research, generate article spec.
-  Activates automatically at Step 1 of multi-agent-article-pipeline. Do NOT trigger for
-  writing, auditing, SEO, triage, or fact-checking tasks.
+  Triggers on: adversarial research (advocate/skeptic evidence gathering), thesis-based
+  research, generate article spec. Activates automatically at Step 1 of
+  multi-agent-article-pipeline. Do NOT trigger for writing, auditing, SEO, triage, or
+  fact-checking tasks.
 ---
 
 # Article Research Dialectic — v4
@@ -35,7 +35,9 @@ Each vector = one knowledge gap or claim that the article must address.
 Both @advocate and @skeptic receive identical vectors.
 
 **Thesis Confidence = HIGH:** Proceed directly to Phase 2a and 2b.
-**Thesis Confidence = MEDIUM:** Confirm thesis was user-approved at triage before proceeding.
+**Thesis Confidence = MEDIUM:** Verify `pipeline_state.json.gates` contains a triage-stage
+`confirm` entry for this thesis before proceeding; if absent, halt and return to the triage
+gate.
 
 ## Phase 2a: @advocate Evidence Gathering
 
@@ -44,6 +46,11 @@ context. Pass the thesis and the full research vector list in the delegation pro
 subagent starts with no context of its own and has no `Read` tool, so it cannot see anything
 you don't hand it directly. The isolation is capability-enforced: the subagent literally has
 no path to any prior-run artifact, not just an instruction not to look.
+
+Also include the full text of the **Direct Quote Attribution Protocol** and
+**Breaking-News Freshness Protocol** (below, under Research Quality Gate) verbatim in the
+delegation prompt. The subagent has no `Read` tool and cannot retrieve them itself — if you
+omit this text, the subagent has no way to apply the gate.
 
 The subagent gathers SUPPORTING evidence per vector (source priority: Primary > Authoritative
 secondary > Empirical data; minimum 3 sources per vector, `[INSUFFICIENT DATA]` if unmet) and
@@ -100,6 +107,11 @@ context. It runs in its own isolated context with no `Read` tool — it cannot r
 `advocate_context.md` under any circumstance, not because it's told not to, but because it
 has no capability that could open the file. This is what makes the parallel execution
 contract below safe.
+
+Also include the full text of the **Direct Quote Attribution Protocol** and
+**Breaking-News Freshness Protocol** (above, under Research Quality Gate) verbatim in the
+delegation prompt. The subagent has no `Read` tool and cannot retrieve them itself — if you
+omit this text, the subagent has no way to apply the gate.
 
 **Parallel execution contract:** Phase 2a and Phase 2b are formally parallelizable. Once the
 `article-advocate` subagent has written its Source URL Index section, extract just that

@@ -5,11 +5,11 @@ description: >
   complexity triage, research dialectic, fact-check gate, streamed drafting with inline audit,
   red team validation, audience simulation, SEO optimization, and cross-run learning.
   Routes depth (SIMPLE/STANDARD/COMPLEX) based on scored triage. Triggers on: generate article,
-  write article, research and write, multi-agent article, adversarial article, long-form content
-  with research, fact-checked blog post, article pipeline, write with sources. Composes with
-  article-complexity-triage, article-research-dialectic, article-fact-checker, article-qa-auditor,
-  article-red-team, article-reader-simulation, article-seo-optimizer automatically. Do NOT
-  trigger for short posts, social content, or tasks without research requirements.
+  write article, research and write, adversarial/multi-agent article, fact-checked blog post.
+  Composes with article-complexity-triage, article-research-dialectic, article-fact-checker,
+  article-qa-auditor, article-red-team, article-reader-simulation, article-seo-optimizer
+  automatically. Do NOT trigger for short posts, social content, or tasks without research
+  requirements.
 ---
 
 # Multi-Agent Article Pipeline — v4
@@ -62,9 +62,9 @@ Writes `advocate_context.md`. Capability-isolated: the subagent has no `Read` to
 cannot see any prior-run artifact even if instructed to.
 
 **→ Delegate to `article-skeptic` subagent:** Phase 2b — disconfirming evidence.
-- Also has no `Read` tool. Pass only the extracted Source URL Index list (URLs only, no
-  claims) from the advocate's output in its delegation prompt to avoid redundant retrieval —
-  never pass `advocate_context.md` itself or any claim/confidence content from it.
+- Capability-isolated: also has no `Read` tool. Pass only the extracted Source URL Index list
+  (URLs only, no claims) from the advocate's output in its delegation prompt to avoid redundant
+  retrieval — never pass `advocate_context.md` itself or any claim/confidence content from it.
 - Writes `skeptic_evidence.md`.
 
 **→ @synthesizer:** Phase 3 — conflict mapping.
@@ -243,8 +243,6 @@ On `approved`: write `conflict_decisions.json` (schema in `references/pipeline-s
 Record each conflict with: id, handling decision (neutral/author_position/unresolved), position if applicable.
 **This JSON is the authoritative source for @engineer — not the free-text conversation.**
 
-KC-2 Check: third non-substantive consecutive revision → HALT.
-
 ---
 
 ## Step 3: Streamed Drafting + Inline Audit
@@ -308,10 +306,10 @@ Read `pipeline_config.json.pipeline.red_team`.
 **Activate:** `article-red-team` skill, which delegates to the `article-red-team` subagent.
 
 **→ Delegate to `article-red-team` subagent:** Pass ONLY thesis statement + conclusion
-section in the delegation prompt (no full draft — anchoring prevention). The subagent has no
-`Read` tool, so this is capability-enforced, not just an instruction. It has no `Write` tool
-either — it returns the report as its final message; the orchestrator writes it verbatim to
-`red_team_report.md`.
+section in the delegation prompt (no full draft — anchoring prevention). Capability-isolated:
+the subagent has no `Read` tool, so this is enforced, not just an instruction. It has no
+`Write` tool either — it returns the report as its final message; the orchestrator writes it
+verbatim to `red_team_report.md`.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

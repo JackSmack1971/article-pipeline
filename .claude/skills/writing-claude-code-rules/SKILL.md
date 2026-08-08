@@ -58,7 +58,7 @@ paths:
 
 Rules without `paths:` are always-on. Splitting one large always-on file into five unscoped rule files improves maintainability, but it does not reduce their combined context cost.
 
-Treat path activation as **read-triggered context**, not a hard filesystem policy. If an instruction must govern creation of a brand-new file before Claude has reason to read any matching file, do not rely on path scoping alone; keep the minimum necessary breadcrumb always-on or enforce the behavior mechanically.
+Treat path activation as **read-triggered context**, not a hard filesystem policy. If an instruction faces an **activation gap** — it must govern a brand-new file before Claude has read any matching file — do not rely on path scoping alone; keep the minimum necessary breadcrumb always-on or enforce the behavior mechanically.
 
 **Completion criterion:** every path-scoped rule has globs that match all intended files, exclude known non-targets, and are not being used as a substitute for a task trigger or security boundary.
 
@@ -71,11 +71,11 @@ For each line, require a **behavioral delta**: removing it would make a relevant
 Write instructions with these forms:
 
 - **Atomic** — one behavior per bullet.
-- **Concrete** — name the command, path, helper, invariant, or observable result.
+- Concrete — name the command, path, helper, invariant, or observable result.
 - **Verifiable** — prefer “run `pnpm test api -- <file>`” over “test thoroughly.”
 - **Positive target** — tell Claude what pattern to produce. When a prohibition is necessary, pair it with the replacement behavior.
 - **Local rationale when useful** — a short reason can improve generalization when the rule has edge cases; keep it on the same bullet as the behavior.
-- **Existing exemplar over pasted tutorial** — point to a stable in-repo example when the code itself demonstrates the pattern better than prose.
+- **Exemplar pointer** — point to a stable in-repo example when the code itself demonstrates the pattern better than prose.
 
 Prefer:
 
@@ -143,9 +143,11 @@ If the file did not load, fix scope/discovery. If it loaded and the behavior sti
 
 Do not cargo-cult `IMPORTANT`, `MUST`, duplicated warnings, XML wrappers, or elaborate templates. Current Claude prompting guidance favors clear, explicit instructions and says context/motivation can help; historical Claude Code guidance noted that emphasis sometimes improved adherence. Newer Claude models are also more literal and may overreact to blanket prompting.
 
-Use emphasis only after a normal concrete instruction fails a representative evaluation. Prefer improving scope, specificity, and verification first.
+Apply **emphasis escalation**: add emphasis only after a normal concrete instruction fails a representative evaluation. Prefer improving scope, specificity, and verification first.
 
 When reliability matters, run an **A/B rule eval** using [`EVALS.md`](EVALS.md). Judge behavior on representative tasks, not how persuasive the prose looks to a human.
+
+**Completion criterion:** every `IMPORTANT`/`MUST`/duplicated-warning marker in the changed rule either predates a failed representative eval in EVALS.md or has been removed/downgraded to a plain instruction.
 
 ## 9. Produce the smallest coherent change
 
@@ -159,3 +161,5 @@ When writing or refactoring rules:
 6. name any unresolved conflict, activation edge case, or enforcement gap.
 
 A successful rules change is smaller than the instruction debt it replaces.
+
+**Completion criterion:** the diff touches only the authoritative files identified in the rule map, no displaced duplicate remains in a non-authoritative file, and the report states always-on vs path-triggered load plus any unresolved conflict or activation gap.

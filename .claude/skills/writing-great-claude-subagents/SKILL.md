@@ -27,15 +27,7 @@ Treat frontmatter and body as different control planes. Mixing their jobs makes 
 
 ### Frontmatter is the routing and capability plane
 
-Use it for machine-interpreted configuration:
-
-- `name` — stable identity.
-- `description` — the parent-facing **routing surface**.
-- `tools` / `disallowedTools` — capability selection.
-- `model` / `effort` / `maxTurns` — cost and reasoning envelope.
-- `permissionMode`, `hooks`, `isolation` — enforcement and execution boundary.
-- `skills`, `mcpServers`, `memory` — deliberate context or capability injection.
-- `background`, `color`, `initialPrompt` — runtime/UI behavior where needed.
+Use it for machine-interpreted configuration: identity and routing (`name`, `description`), capability selection, cost/reasoning envelope, enforcement and execution boundary, deliberate context or capability injection, and runtime/UI behavior — see [`REFERENCE.md`](REFERENCE.md) for the current field-by-field surface.
 
 Do not explain these settings again in the body unless the subagent itself must reason about their consequence. Keep each meaning in a **single source of truth**.
 
@@ -79,8 +71,7 @@ Every enabled tool adds both power and ambiguity. Start with the smallest surfac
 - Use `disallowedTools` when it mostly needs the inherited tool set but a few capabilities are inappropriate.
 - Prefer read-only workers for diagnosis, review, research, and planning unless edits are intrinsic to the job.
 - Use `isolation: worktree` when independent code changes are the point and repository isolation materially reduces collision risk.
-- Scope MCP servers to the subagent when their tools are useful only there; this keeps irrelevant tool descriptions out of the parent context.
-- Preload skills only when their full content is needed on most invocations. Preloading is context, not a permission boundary.
+- Scope skill and MCP preloading deliberately (see [Context additions](#context-additions) for the `skills`/`mcpServers` rule).
 - Use hooks and permissions for enforceable gates. A sentence such as “never modify production” is not a substitute for preventing the relevant action.
 
 A **capability leak** is a worker receiving power it does not need. A **capability gap** is a worker unable to complete its own contract. Optimize for the narrow band between them.

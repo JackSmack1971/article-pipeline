@@ -3,8 +3,7 @@ name: article-reader-simulation
 description: >
   Simulates a declared target audience reading an article or document, surfacing comprehension
   gaps, undefined jargon, assumed knowledge, and accessibility issues. Produces a prioritized
-  gap report and accessibility rating. Pre-scans for parenthetical definitions before flagging
-  terms as gaps — avoids false positives on already-defined terminology. Usable standalone on
+  gap report and accessibility rating. Usable standalone on
   any document. Triggers on: simulate the reader, how will my audience read this, accessibility
   check, comprehension gaps, reader perspective, is this too technical, audience simulation,
   reader questions. Activates automatically at Step 5 of multi-agent-article-pipeline. Do NOT
@@ -23,7 +22,13 @@ a perfect article — it is to surface the gaps @engineer can still fix.
 
 Read `article_spec.md` — extract:
 - `Target Audience:` field — who they are and what they already know
-- `Pipeline Depth:` field — sets simulation rigor (SIMPLE = casual reader; COMPLEX = expert critical reader)
+- `Pipeline Depth:` field — sets simulation rigor per this table:
+
+| Pipeline Depth | Primary Persona | Rigor Level |
+|----------------|----------------|-------------|
+| SIMPLE | Informed Outsider | low rigor |
+| STANDARD | Practitioner | medium rigor |
+| COMPLEX | Expert Critical Reader + Practitioner in sequence | high rigor |
 
 Calibrate your persona to that audience. You are not reading as an editor or expert. If you
 find yourself thinking "I understand what they mean," your persona has drifted — an expert
