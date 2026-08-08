@@ -97,6 +97,199 @@ The checked-in corpus currently spans:
 One trial per eight briefs produces eight paired observations. For a consequential cross-cutting
 change, increase `--trials` and use a held-out corpus for confirmation.
 
+## Greatness Benchmark Corpus (G-000)
+
+`greatness_corpus_v1.json` is a separate, **development/calibration** corpus of 16
+deliberately difficult briefs for measuring performance against
+`docs/Great Article Standard v1.md` (see also `docs/GREATNESS-GAP-ANALYSIS.md`). It is not
+loaded by default — `qpr_runner.py --corpus` still defaults to `development_corpus.json` — so
+adding this corpus does not change production-pipeline behavior. Run it explicitly:
+
+```bash
+python3 scripts/evals/qpr_runner.py \
+  --baseline-ref main \
+  --candidate-ref HEAD \
+  --corpus evals/article_pipeline/greatness_corpus_v1.json \
+  --trials 1 \
+  --dry-run
+```
+
+It uses the exact same brief schema and loader as `development_corpus.json` (§ Brief schema
+below) plus additional **evaluator-only diagnostic fields** that `qpr_runner.py` never reads
+into a subject prompt: `archetype`, `benchmark_rationale`, `stressed_dimensions`,
+`primary_failure_modes`, `freshness_matters`, `scholarly_evidence_matters`. `build_subject_prompt()`
+only ever reads `topic_brief`, `target_audience`, `intended_thesis`, and `scripted_decisions` —
+`tests/test_article_evals.py::GreatnessCorpusTests::test_diagnostic_fields_never_change_the_subject_prompt`
+proves this by asserting the generated prompt is identical with or without every diagnostic-only
+field present, for every brief in the corpus. No schema or loader change was needed to achieve
+this separation; it already existed because the loader is permissive about extra keys.
+
+### Distribution
+
+Two briefs per Great Article Standard §3 archetype (16 total):
+
+- Scientific / Scholarly Explainer — `gc-sci-01`, `gc-sci-02`
+- Investigative / Current-Affairs Analysis — `gc-inv-01`, `gc-inv-02`
+- Strategic / Executive Decision Guide — `gc-exec-01`, `gc-exec-02`
+- Technical Tutorial / Technical Explainer — `gc-tech-01`, `gc-tech-02`
+- Comparative / Commercial Decision Guide — `gc-cmp-01`, `gc-cmp-02`
+- Argument / Thought Leadership — `gc-arg-01`, `gc-arg-02`
+- Human-Centered Narrative / Feature — `gc-narr-01`, `gc-narr-02`
+- Breaking-News Analysis — `gc-news-01`, `gc-news-02`
+
+Each pair varies difficulty (`allowed_depths`), fact stability vs. freshness pressure
+(`freshness_matters`, `suite_tags`), evidence abundance, contestedness, audience technicality,
+and whether an emotional register is appropriate — see each brief's `suite_tags`.
+
+### Adversarial coverage
+
+`primary_failure_modes` on each brief names which of the following it stresses; every mode is
+exercised by at least two briefs:
+
+`correlation_to_causation_drift`, `study_scope_overgeneralization`, `newest_vs_strongest_evidence`,
+`contradictory_evidence`, `uncertainty_inflation`, `weak_but_popular_claims`,
+`seductive_predetermined_thesis`, `fabricated_first_person_experience_pressure`,
+`verbosity_after_evidence_exhausted`.
+
+`stressed_dimensions` tags each brief with the Great Article Standard Hard Epistemic Invariants
+(E1–E12) and/or Excellence Vector dimensions (RQ, CQ, IG, SI, IH, RT, AF, HR, SF, PU) it is
+designed to exercise, for use when building a future Greatness evaluator (§9 of the Standard).
+
+### Contamination controls
+
+Same isolation model as the rest of this harness (see "Important separation" above): the corpus
+lives under `evals/`, which `scrub_subject_worktree()` removes from subject worktrees before a
+subject session runs. `gc-*` briefs contain no evaluator answer keys or rubric text inside
+`topic_brief`/`target_audience`/`intended_thesis` — only the diagnostic-only fields carry
+evaluator framing, and those are never placed in the subject prompt (see above).
+
+### Adding a brief
+
+1. Pick the archetype(s) and adversarial failure mode(s) the new brief should stress; check
+   `stressed_dimensions`/`primary_failure_modes` coverage isn't already saturated for that mode.
+2. Give it a unique `gc-<archetype-abbrev>-NN` id and fill every field required by
+   `GreatnessCorpusTests.test_every_brief_declares_required_diagnostic_fields`.
+3. Keep `topic_brief`/`target_audience`/`intended_thesis` subject-visible-safe: write them as if
+   a real editor handed them to a writer, not as grading instructions.
+4. Run `python3 -m unittest discover -s tests -p 'test_*.py'` — the corpus-shape and
+   prompt-separation tests run automatically.
+
+### What this corpus is not
+
+This is **development/calibration data** used to build and iterate on future Greatness
+evaluation machinery (Layers 2–8 of Standard §9). It is visible to anyone with repository
+access and is not a held-out proof of pipeline quality. Per
+`docs/CONTROL-PLANE-IMPROVEMENT-PROTOCOL.md` §4.5/§4.6, any claim that the pipeline reliably
+produces "great" articles requires a separate held-out corpus outside this repository,
+frozen grader/harness versions, and the same isolation discipline already used for QPR
+confirmation runs.
+
+## Greatness Evaluator v0 (G-001)
+
+`scripts/evals/greatness_evaluator.py` scores a finished article against the Excellence Vector
+in `docs/Great Article Standard v1.md` §2.2. It is **eval-only and operationally independent**:
+it does not replace, weaken, or re-derive `validate_artifacts.py`, `claim_citation_grader.py`,
+`editorial_grader.py`, or QPR — it consumes an existing QPR/epistemic qualification decision as
+an input and sits strictly above it.
+
+```bash
+python3 scripts/evals/greatness_evaluator.py \
+  --article path/to/article_draft.md \
+  --brief evals/article_pipeline/greatness_corpus_v1.json \
+  --qpr-record ../article-eval-results/.../trials/<trial>/record.json
+```
+
+(`--brief` must resolve to a single brief object with an `archetype` field; pass one extracted
+brief, not the corpus wrapper. `--epistemic-eligible`/`--epistemic-ineligible` plus
+`--epistemic-reason` are available instead of `--qpr-record` for manual/dry runs.)
+
+Key design points, each directly answering a requirement in `docs/GREATNESS-GAP-ANALYSIS.md` §2/§9:
+
+- **Scores exactly nine dimensions** — RQ, CQ, SI, IH, RT, AF, HR, SF, PU — each via 4 atomic,
+  decomposed yes/no criteria with a grader rationale (CheckEval-style; Standard §9 Layer 4),
+  not one vague score.
+- **IG (Information Gain) is explicitly `NOT_EVALUATED`.** No proxy is substituted — there is no
+  competitor corpus or Atomic Information Unit machinery in this repository (Standard §5/§7).
+- **Ownership split**: the semantic grader (one blind `--bare` Claude Code call, no tools, no
+  filesystem, no baseline/candidate identity, no internal QA/fact-check conclusions, no token
+  spend, no production self-score — same blind pattern as `editorial_grader.py`) judges each
+  criterion. All schema validation, aggregation, archetype weighting math, thresholds, and
+  classification are deterministic Python.
+- **Archetype weighting** uses the exact §3 table (`ARCHETYPE_WEIGHTS`), evaluator-side only —
+  no production archetype routing was added. The table has no IH column (IH is a universal floor,
+  not archetype-weighted, per §2.2); the weighted Excellence Index excludes IG and IH, both of
+  which are still graded/floor-checked outside the weighted composite.
+- **IH universal floor**: any article scoring below the floor is capped at `PUBLISHABLE`
+  regardless of every other dimension or the Excellence Index.
+- **Epistemic/QPR ineligibility always forces `EPISTEMICALLY_INELIGIBLE`** and skips scoring
+  entirely (Standard §2.1: "the Greatness evaluation stops") — it can never classify `GREAT` or
+  `EXCEPTIONAL`.
+- **`GREAT`/`EXCEPTIONAL` are structurally capped at `STRONG` in v0.** Both require demonstrated
+  information gain (§2.4), which cannot be true while IG is `NOT_EVALUATED`. `classify()` still
+  reports whether the excellence-index/IH/CQ thresholds were met (`would_meet_..._excluding_ig`)
+  as a diagnostic, so the cap is visible rather than silently absorbed.
+- **Raw dimension scores and per-criterion diagnostics are preserved** alongside the weighted
+  Excellence Index, not just the aggregate.
+- **RT (Reader Transformation) carries a fixed limitation note** on every run: no production
+  Reader Transformation Contract exists yet (Standard §4), so RT is a post-hoc proxy, not a
+  measurement against a predeclared before/after contract.
+- Output includes `evaluator_version`, `rubric_version`, grader `model`/`effort`/confidence, and
+  per-dimension confidence — thresholds and the PUBLISHABLE/STRONG/GREAT/EXCEPTIONAL labels are
+  provisional calibration hypotheses (Standard §2.3/§2.4), not empirical truths.
+
+Regression coverage lives in `tests/test_article_evals.py::GreatnessEvaluatorTests` and never
+shells out to `claude` (it exercises `classify()`/`compute_dimension_scores()`/
+`compute_excellence_index()` directly with synthetic grader payloads, plus the
+`epistemic_eligible=False` short-circuit of `evaluate()`).
+
+### QPR integration (`--evaluate-greatness`)
+
+`qpr_runner.py` can optionally attach a Greatness result to each trial record without changing
+QPR at all:
+
+```bash
+python3 scripts/evals/qpr_runner.py \
+  --baseline-ref main \
+  --candidate-ref HEAD \
+  --corpus evals/article_pipeline/greatness_corpus_v1.json \
+  --evaluate-greatness \
+  --trials 1
+```
+
+`--evaluate-greatness` is opt-in and additive only: `should_run_greatness()` gates it on the flag
+plus the brief declaring a known archetype (so `development_corpus.json` briefs, which have no
+`archetype` field, are never scored regardless of the flag), and it never touches
+`qualification()` or `aggregate_arm()` — the functions that actually compute QPR. On success the
+full `evaluate()` result (eligibility, archetype, all nine raw dimension scores and diagnostics,
+weighted excellence index, provisional classification, `IG=NOT_EVALUATED`, evaluator/rubric
+version) lands unmodified at `record["greatness"]`. On failure the error lands separately at
+`record["greatness_error"]`, distinct from `record["evaluator_error"]` (harness/subject
+infrastructure failures) and from `record["qualification"]` (article/subject failures), so a
+Greatness scoring problem can never be conflated with, suppress, or inflate a QPR outcome.
+`--greatness-model`/`--greatness-effort`/`--greatness-max-budget-usd`/`--greatness-timeout-seconds`
+control the grader call; the chosen configuration is recorded in `experiment_manifest.json` under
+`greatness_evaluation`.
+
+Regression coverage: `tests/test_article_evals.py::GreatnessQprIntegrationTests`.
+
+### Calibration readiness
+
+See `docs/GREATNESS-EVALUATOR-CALIBRATION.md` for evaluator independence, deterministic-vs-semantic
+ownership, the anti-gaming test strategy and what it does/does not prove, provisional-threshold
+status, known limitations, and exactly what human calibration and held-out confirmation are still
+required before this evaluator can inform any real decision. Current status:
+**NOT_READY_FOR_HUMAN_CALIBRATION**.
+
+### What G-001 v0 does not do
+
+Per the goal scope for this increment, deliberately absent: competitor research/corpus
+ingestion, CIG/IG scoring or any proxy for it, pairwise competitor evaluation, a production
+Reader Transformation Contract, scholarly retrieval infrastructure, a humanity/prose rewrite
+pass, and any wiring into `pipeline_runner.py` finalize or production archetype routing. Adding
+any of these is a separate, higher-evidence-bar experiment under
+`docs/CONTROL-PLANE-IMPROVEMENT-PROTOCOL.md` (Class C/D) — see `docs/GREATNESS-GAP-ANALYSIS.md`
+§5/§7/§9 for what each would require.
+
 ## Held-out confirmation
 
 The corpus can be an external JSON file containing either one brief object or a `{ "briefs": [...] }` wrapper (directories of brief JSON files are also supported):

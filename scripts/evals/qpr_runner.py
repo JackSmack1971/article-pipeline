@@ -36,6 +36,8 @@ try:
         sum_numeric,
     )
     from scripts.evals.editorial_grader import grade_article as grade_editorial
+    from scripts.evals.greatness_evaluator import ARCHETYPE_WEIGHTS as GREATNESS_ARCHETYPES
+    from scripts.evals.greatness_evaluator import evaluate as evaluate_greatness
 except ModuleNotFoundError:  # direct invocation
     from claim_citation_grader import grade_article as grade_claims
     from common import (
@@ -56,6 +58,8 @@ except ModuleNotFoundError:  # direct invocation
         sum_numeric,
     )
     from editorial_grader import grade_article as grade_editorial
+    from greatness_evaluator import ARCHETYPE_WEIGHTS as GREATNESS_ARCHETYPES
+    from greatness_evaluator import evaluate as evaluate_greatness
 
 
 DEFAULT_THRESHOLDS = {
@@ -507,6 +511,48 @@ def qualification(
     }
 
 
+def should_run_greatness(brief: dict[str, Any], *, enabled: bool) -> bool:
+    """Gate for G-001 Greatness scoring: opt-in flag plus a brief that declares a known archetype.
+
+    Development-corpus briefs (evals/article_pipeline/development_corpus.json) have no
+    `archetype` field and are therefore never scored, regardless of the flag -- Greatness only
+    ever runs against Great Article Standard v1 §3 archetypes (see greatness_corpus_v1.json).
+    """
+    return enabled and brief.get("archetype") in GREATNESS_ARCHETYPES
+
+
+def greatness_result_for_trial(
+    article_text: str,
+    brief: dict[str, Any],
+    qualification_result: dict[str, Any],
+    *,
+    model: str,
+    effort: str,
+    max_budget_usd: float,
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    """Attach a G-001 Greatness evaluation to a trial without re-deriving QPR eligibility.
+
+    This module never overrides `qualification_result`; it forwards the same qualified flag and
+    reasons already computed by `qualification()` as the caller-supplied epistemic eligibility
+    input `evaluate()` requires (Great Article Standard v1 §2.1). Greatness is layered strictly
+    above QPR (see scripts/evals/greatness_evaluator.py module docstring) and never replaces it.
+    """
+    reasons = list(qualification_result.get("reasons", [])) + list(
+        qualification_result.get("hard_guardrail_failures", [])
+    )
+    return evaluate_greatness(
+        article_text,
+        brief,
+        epistemic_eligible=bool(qualification_result.get("qualified")),
+        epistemic_reasons=reasons,
+        model=model,
+        effort=effort,
+        max_budget_usd=max_budget_usd,
+        timeout_seconds=timeout_seconds,
+    )
+
+
 def trial_infrastructure_error(record: dict[str, Any]) -> bool:
     if record.get("evaluator_error"):
         return True
@@ -639,6 +685,11 @@ def run_one(
     editorial_budget: float,
     grader_timeout: int,
     preserve_knowledge: bool,
+    evaluate_greatness: bool = False,
+    greatness_model: str = "opus",
+    greatness_effort: str = "high",
+    greatness_max_budget_usd: float = 1.5,
+    greatness_timeout_seconds: int = 900,
 ) -> dict[str, Any]:
     trial_name = f"{brief['id']}-t{trial_index}-{arm}"
     record: dict[str, Any] = {
@@ -674,6 +725,7 @@ def run_one(
 
         article_path = trial_out / "artifacts" / "article_draft.md"
         claim_result = editorial_result = None
+        article_text = None
         if article_path.is_file():
             article_text = article_path.read_text(encoding="utf-8")
             claim_result = grade_claims(
@@ -711,6 +763,23 @@ def run_one(
             static_guardrails=record["static_guardrails"],
             dynamic_guardrails=record["dynamic_guardrails"],
         )
+
+        # G-001 Greatness scoring is opt-in, additive, and evaluated in its own try/except so a
+        # Greatness failure is never conflated with the harness/subject failures caught below or
+        # with the QPR qualification computed above (see docs/GREATNESS-EVALUATOR-CALIBRATION.md).
+        if should_run_greatness(brief, enabled=evaluate_greatness) and article_text is not None:
+            try:
+                record["greatness"] = greatness_result_for_trial(
+                    article_text,
+                    brief,
+                    record["qualification"],
+                    model=greatness_model,
+                    effort=greatness_effort,
+                    max_budget_usd=greatness_max_budget_usd,
+                    timeout_seconds=greatness_timeout_seconds,
+                )
+            except (EvalError, OSError, json.JSONDecodeError) as exc:
+                record["greatness_error"] = str(exc)
     except (EvalError, OSError, json.JSONDecodeError) as exc:
         record["evaluator_error"] = str(exc)
 
@@ -774,6 +843,19 @@ def main() -> int:
     parser.add_argument("--minimum-qpr-delta", type=float, default=0.05)
     parser.add_argument("--noninferiority-margin", type=float, default=0.02)
     parser.add_argument("--minimum-pairs", type=int, default=6)
+    parser.add_argument(
+        "--evaluate-greatness",
+        action="store_true",
+        help=(
+            "Additionally attach a G-001 Greatness Evaluator v0 score to trials whose brief "
+            "declares a Great Article Standard v1 archetype (see greatness_corpus_v1.json). "
+            "Additive only -- never affects QPR qualification or aggregate_arm()."
+        ),
+    )
+    parser.add_argument("--greatness-model", default="opus")
+    parser.add_argument("--greatness-effort", default="high")
+    parser.add_argument("--greatness-max-budget-usd", type=float, default=1.5)
+    parser.add_argument("--greatness-timeout-seconds", type=int, default=900)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -833,6 +915,17 @@ def main() -> int:
             "environment": environment_snapshot(repo),
             "evaluator_sha256": sha256_files([path for path in evaluator_files if path.is_file()]),
             "corpus_sha256": sha256_files(corpus_files),
+            "greatness_evaluation": (
+                {
+                    "enabled": True,
+                    "model": args.greatness_model,
+                    "effort": args.greatness_effort,
+                    "max_budget_usd": args.greatness_max_budget_usd,
+                    "timeout_seconds": args.greatness_timeout_seconds,
+                }
+                if args.evaluate_greatness
+                else {"enabled": False}
+            ),
         }
         atomic_write_json(output_dir / "experiment_manifest.json", manifest)
         if args.dry_run:
@@ -870,6 +963,11 @@ def main() -> int:
                             editorial_budget=args.editorial_grader_max_budget_usd,
                             grader_timeout=args.grader_timeout_seconds,
                             preserve_knowledge=args.preserve_knowledge,
+                            evaluate_greatness=args.evaluate_greatness,
+                            greatness_model=args.greatness_model,
+                            greatness_effort=args.greatness_effort,
+                            greatness_max_budget_usd=args.greatness_max_budget_usd,
+                            greatness_timeout_seconds=args.greatness_timeout_seconds,
                         )
                         records.append(record)
                         atomic_write_json(output_dir / "records.json", {"records": records})
