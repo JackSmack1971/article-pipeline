@@ -1,5 +1,4 @@
 {
-  "schema_version": 1,
   "pipeline": {
     "depth": "COMPLEX",
     "adversarial_dialectic": true,
@@ -12,23 +11,22 @@
       "code_execution": false,
       "web_search": true
     },
-    "topic_brief": "The rapid advancement of highly capable, cost-effective Chinese open-source AI models like Alibaba's Qwen 3.8 Max is challenging the dominance of closed-source US models while presenting complex geopolitical risks and strategic choices for Western enterprises.",
-    "thesis": "Although US closed-source labs still hold a massive compute and parameter-size advantage, Chinese frontier-grade open-source models are offering competitive benchmarks at a fraction of the cost, providing enterprises with valuable architectural flexibility and freedom from platform lock-in. However, this shift creates a profound tension: while these open-source releases pressure US giants and democratize access, they also risk making Western infrastructure deeply dependent on Chinese technology, potentially linking software design with optimized foreign hardware and escalating geopolitical vulnerabilities. Ultimately, this dynamic leaves the future of AI divided between the commoditizing force of powerful open-source alternatives and the sheer scaling velocity of heavily resourced, recursively self-improving closed systems.",
+    "topic_brief": "Contemporary conflict increasingly weaponizes both human cognition and the social institutions that determine what counts as knowledge, transforming the mind and the epistemic structures of society into interconnected battlespaces.",
+    "thesis": "Cognitive warfare and epistemic warfare should be understood not as interchangeable labels or wholly novel forms of conflict, but as distinct yet mutually reinforcing dimensions of a broader struggle over contested cognition: cognitive warfare targets the psychological, behavioral, and increasingly neurotechnological processes through which individuals perceive, reason, and decide, while epistemic warfare operates at the structural level by contesting or manipulating the institutions, authorities, models, and knowledge systems through which societies establish truth and coordinate collective action. Integrating military and strategic studies with political science, science and technology studies, philosophy, law, and decolonial scholarship reveals that the central security challenge is therefore not merely adversarial information, but the systematic exploitation of vulnerabilities across the entire knowledge-production environment. Because existing military doctrine, international law, and content-focused countermeasures inadequately capture these interconnected forms of non-kinetic harm, an effective response requires greater conceptual precision and a shift toward protecting cognitive liberty, strengthening epistemic security, and building resilient socio-technical and institutional systems capable of sustaining human agency, pluralism, and democratic decision-making under conditions of persistent epistemic contestation.",
     "thesis_confidence": "MEDIUM",
-    "novelty_score": 5,
+    "thesis_gate_decision": "rephrase",
+    "novelty_score": 4,
     "contentiousness_score": 5,
-    "scope_score": 4,
-    "composite_score": 4.75,
+    "scope_score": 5,
+    "composite_score": 4.65,
     "budget_adjusted": false,
     "budget_adjustment_reason": null,
-    "routed_at": "2026-08-03T00:00:00Z",
-    "brief_flags": [
-      {
-        "phrase": "Alibaba's Qwen 3.8 Max",
-        "risk": "named-entity-unverified",
-        "recommendation": "verify at research gate",
-        "note": "Specific model name/version cannot be confirmed from training data; treat as a research vector requiring live-source verification of exact model name, release date, and benchmark claims."
-      }
-    ]
+    "word_count_method": "canonical_markdown_tokens",
+    "routed_at": "2026-08-08T00:00:00Z",
+    "author": {
+      "name": null,
+      "credential": null,
+      "affiliation": null
+    }
   }
 }

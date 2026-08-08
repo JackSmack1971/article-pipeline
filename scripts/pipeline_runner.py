@@ -75,6 +75,18 @@ def migrate_state(root: Path) -> dict:
     return result
 
 
+def init_state(root: Path) -> dict:
+    """Bootstrap pipeline_state.json for a brand-new run. Refuses if a state
+    file already exists so a stalled/prior run is never silently clobbered."""
+    root = root.resolve()
+    path = state_path(root)
+    if path.is_file():
+        return {"status": "ALREADY_EXISTS", "stage": load_state(root).get("stage")}
+    state = {"stage": "TRIAGE", "gate_history": [], "kc_events": []}
+    save_state(root, state)
+    return {"stage": "TRIAGE", "status": "INITIALIZED"}
+
+
 def advance(root: Path, target: str) -> dict:
     state = load_state(root)
     current = state.get("stage")
@@ -221,7 +233,7 @@ def finalize(root: Path) -> tuple[dict, int]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=(
-        "advance", "finalize", "sync-word-count", "migrate-state",
+        "init", "advance", "finalize", "sync-word-count", "migrate-state",
         "record-gate", "record-kc-event", "increment-revision", "record-audit-verdict",
     ))
     parser.add_argument("--stage")
@@ -235,7 +247,9 @@ def main() -> int:
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
     try:
-        if args.command == "advance":
+        if args.command == "init":
+            report, code = init_state(args.artifact_root), 0
+        elif args.command == "advance":
             if not args.stage:
                 parser.error("advance requires --stage")
             report, code = advance(args.artifact_root, args.stage), 0

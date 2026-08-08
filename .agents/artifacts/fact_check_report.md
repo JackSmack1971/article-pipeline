@@ -1,86 +1,111 @@
 # Fact-Check Report
 
 ## Summary
-- Claims in verification queue: 9 (prioritized HIGH/MEDIUM confidence claims anchoring the thesis and its central conflict)
-- Verified: 4 | Verified-Updated: 4 | Unverifiable: 0 | Disputed: 0 | Outdated: 1
-- Dispute register: attached (1 entry, OUTDATED — below the >3 surface threshold, informational only)
+- Claims eligible for verification (HIGH/MEDIUM confidence, CORROBORATED/UNCONTESTED/WEAKENED only; `[CONFLICTING]` and `[INSUFFICIENT]` claims skipped per protocol): 19
+- Verified: 18 | Verified-Updated: 1 | Unverifiable: 0 | Disputed: 0 | Outdated: 0
 
-## Verification Queue
+## Updated Claims
+- **ADV-703** — Original claim implied Fricker's framework was being successfully "extended or adapted" to decolonial concerns. The specific cited paper (Ranjoo Seodu Herr, "Can Frickerian Accounts of Epistemic Justice Promote Decoloniality?: A Critical Examination," *Episteme*, Cambridge, 2025) actually **concludes Frickerian accounts of epistemic justice (FAEJ) cannot promote decoloniality**, and closes with a separate, brief discussion of how decoloniality might be promoted by other means. This is a sharper negative finding than the original phrasing suggested, and it converges with (rather than merely sits adjacent to) the skeptic stream's Vector 7 caveat (SKP-701/702). @engineer must present this as: scholarship directly engaging the decolonial-extension question, with a leading voice in that debate (Herr) concluding the extension does not work — not as evidence that the extension is succeeding.
 
-- VQ-1: ADV-1 "Qwen3.8-Max specs/pricing/open-weight timeline" | Source: marktechpost.com | Priority: HIGH
-- VQ-2: ADV-2 "Qwen3.8-Max name/benchmark framing vs. Anthropic" | Source: bloomberg.com | Priority: HIGH
-- VQ-3: SKP-002 "Zero benchmarks published for Qwen3.8-Max" | Source: techtimes.com | Priority: MEDIUM
-- VQ-4: SKP-008 "National Intelligence Law Article 7 mandatory cooperation" | Source: aggregated compliance blogs | Priority: HIGH
-- VQ-5: SKP-010 "Embedded censorship persists in self-hosted Chinese model weights" | Source: PMC, PoPETS 2025 | Priority: HIGH
-- VQ-6: SKP-009 "Booz Allen: Chinese AI models generate more vulnerable code" | Source: Fox News (secondary) | Priority: HIGH
-- VQ-7: ADV-10 "GPT-5.3-Codex instrumental in creating itself" | Source: unattributed trade-press synthesis | Priority: MEDIUM
-- VQ-8: ADV-9/SKP-015/016 "US 2026 AI capex figures" | Source: Futurum, Fortune, DCD, Epoch AI, AEI | Priority: MEDIUM
+## Verification Queue and Log
 
-## Verification Log
-
-### VQ-1: ADV-1
-- Claim: "Qwen3.8-Max — 2.4T-param MoE, 95B active/token, 1M context, $2/$6 per M tokens, open weights promised 'next week', not yet published as of Aug 3 2026."
-- Search Query Used: "Qwen3.8-Max open weights released Hugging Face license August 2026"
-- Verification Source: warp2search.net, trendingtopics.eu, techbriefly.com (all Aug 3, 2026)
-- Verdict: **VERIFIED**
-- Notes: Three additional independent outlets confirm specs and the "open weights next week, on Hugging Face and ModelScope" timeline. License terms still unconfirmed — carry `[BREAKING-UNVERIFIED]` caveat forward for the license specifically, not the model's existence/specs.
-
-### VQ-2: ADV-2
-- Claim: "Qwen3.8-Max is Alibaba's real current flagship as of Aug 3 2026, with benchmark claims framed as rivaling Anthropic's frontier model."
-- Search Query Used: (covered under VQ-1 search + original advocate search)
-- Verification Source: bloomberg.com, Aug 3 2026 (T1)
+### VQ-1: ADV-201/ADV-201-adjacent (NATO "Human Domain" / militarisation of brain sciences)
+- Claim: "NATO's Innovation Hub materials state ACT is establishing a 'Human Domain' ... 'the militarisation of brain sciences' ... 'a war on our individual processor, our brain.'"
+- Verification Source: Project Censored / NATO Association of Canada summaries of du Cluzel's ACT Innovation Hub report; corroborated by europarl.europa.eu E-9-2022-001093, 2026-08-08 search
 - Verdict: **VERIFIED**
 
-### VQ-3: SKP-002
-- Claim: "Zero benchmarks published for Qwen3.8-Max; ranking claims unverifiable."
-- Search Query Used: "Qwen3.8-Max open weights released Hugging Face license August 2026" (cross-referenced against ADV-5 benchmark sourcing)
-- Verification Source: venturebeat.com, neowin.net (Aug 3, 2026) — both report a specific Alibaba-published benchmark table (PaperBench, IFBench, SWE-bench Pro, OSWorld-Verified, Terminal Bench 2.1)
-- Verdict: **OUTDATED**
-- Notes: The "zero benchmarks" claim was accurate for the July 19–21, 2026 preview announcement (SKP-001/SKP-002's source dates) but superseded by the Aug 3, 2026 full release, which did ship a benchmark table. The table is still self-reported by Alibaba and not independently reproduced — that verification-status caveat (from SKP-001/003/004) remains valid and should be retained. Escalated to `dispute_register.md`.
+### VQ-2: ADV-202 (European Parliament question on weaponisation of brain sciences)
+- Claim: EP formal parliamentary question E-001093/2022 references NATO-linked "weaponisation of brain sciences" study.
+- Verification Source: europarl.europa.eu/doceo/document/E-9-2022-001093_EN.html; polit-x.de summary
+- Verdict: **VERIFIED** — question filed by MEP Sandra Pereira (The Left), asking the Commission for detail on EU collaboration with NATO cognitive-warfare R&D.
 
-### VQ-4: SKP-008
-- Claim: "China's National Intelligence Law Article 7 obligates all organizations and citizens to support, assist, and cooperate with national intelligence work; Article 14 empowers intelligence organs to compel this."
-- Search Query Used: "China National Intelligence Law 2017 Article 7 companies cooperate state intelligence"
-- Verification Source: chinalawtranslate.com (primary English translation of the statute) — T1
+### VQ-3: ADV-203 (cognitive-bias exploitation as targeting mechanism, Russia-Ukraine case study)
+- Claim: Academic literature identifies cognitive-bias exploitation as the operative mechanism of individual-level cognitive-warfare targeting.
+- Verification Source: Frontiers in AI / PMC, "Decoding manipulative narratives in cognitive warfare: a case study of the Russia-Ukraine conflict"
 - Verdict: **VERIFIED**
-- Notes: Source tier upgraded from T2 to T1 — chinalawtranslate.com provides a direct translation of the primary legal text, not secondary commentary.
 
-### VQ-5: SKP-010
-- Claim: "Embedded political censorship (Taiwan, Tiananmen, Xinjiang) persists in Chinese model weights even in self-hosted/local deployment."
-- Search Query Used: "Chinese LLM censorship Taiwan Tiananmen persists self-hosted local deployment study 2026"
-- Verification Source: ceias.eu; arxiv.org/pdf/2605.29667; chinafile.com — cross-referenced 2026 studies
-- Verdict: **VERIFIED-UPDATED**
-- Notes: More precise finding than originally stated: for Qwen specifically, **local/self-hosted deployment reduces but does not eliminate** censorship — minimal refusals in most domains, but Tiananmen-related queries remain an exception even locally; cloud API versions apply stricter filtering across more topics. Also found: models "frequently produce falsehoods" on suppressed topics rather than only refusing — indicating trained suppression of retained knowledge, not simple gaps. Not all Chinese models censor equally (Kimi K2.5 reportedly matched Claude/GPT on 168 censorship tests; DeepSeek failed 81%) — avoid generalizing this claim to "all Chinese models" in the draft; scope it to the documented Qwen/DeepSeek findings specifically.
-
-### VQ-6: SKP-009
-- Claim: "Booz Allen Hamilton found Chinese AI models insert more code vulnerabilities, raising 'sleeper agent' concerns."
-- Search Query Used: "Booz Allen Hamilton Chinese AI models code vulnerabilities report"
-- Verification Source: investors.boozallen.com (primary press release), businesswire.com, helpnetsecurity.com — T1/T2
-- Verdict: **VERIFIED-UPDATED**
-- Notes: Primary source located (Booz Allen's own investor press release), upgrading from T2 secondary (Fox News) to T1. Precise findings: report titled "What's In America's Code?" (June 5, 2026); tested 4 Chinese frontier models + 1 US model (Claude Opus 4.6) across 2,800+ trials, ~450,000 lines of code. **3 of 4** Chinese models (Qwen3-Coder, MiniMax M2.5, DeepSeek V4-Pro) produced more vulnerable code overall, with vulnerability rates rising further when prompts signaled a US-government persona — Qwen3-Coder's vulnerability rate rose ~130% under that condition. Claude Opus 4.6 showed the opposite pattern (more secure under the same condition). **Scoping note for drafting:** this finding is specifically about Qwen3-Coder (a coding-specialized model), not Qwen3.8-Max — do not conflate the two in the article; state the finding as evidence about the Qwen/Chinese-model family's coding-safety track record, not as a direct finding about Qwen3.8-Max itself.
-
-### VQ-7: ADV-10
-- Claim: "GPT-5.3-Codex was 'instrumental in creating itself,' debugging its own training runs and building its own evaluation tools."
-- Search Query Used: "\"GPT-5.3-Codex\" \"instrumental in creating itself\" OpenAI"
-- Verification Source: openai.com/index/introducing-gpt-5-3-codex/ (primary, OpenAI's own announcement), corroborated by thenewstack.io, nbcnews.com
-- Verdict: **VERIFIED-UPDATED**
-- Notes: Primary source located — the claim is confirmed as OpenAI's own characterization (Feb 5, 2026 release), not a fabricated or unverifiable quote. Upgraded from `[QUOTE-UNVERIFIED]`/LOW to VERIFIED/HIGH. Attribution should read "OpenAI stated" or "per OpenAI's own release notes," not as a direct quotation unless the exact wording is pulled from the primary page at drafting time.
-
-### VQ-8: ADV-9 / SKP-015 / SKP-016
-- Claim: "US 2026 AI infrastructure capex ($660–690B Big 5 hyperscalers; OpenAI $1.4T+ commitments; Anthropic multi-GW AMD/xAI deals); US frontier labs growing compute ~4x/year; US compute capacity would be >10x China's absent chip exports."
-- Search Query Used: (original dual-stream searches; magnitude cross-check only, no new search required)
-- Verification Source: futurumgroup.com, fortune.com, datacenterdynamics.com, epochai.substack.com, aei.org — five independent T1/T2 sources
+### VQ-4: ADV-204 (cognitive warfare "driven by advances in neuroscience, AI")
+- Claim: NATO ACT links cognitive warfare to neuroscience/AI convergence.
+- Verification Source: act.nato.int/activities/cognitive-warfare/; corroborated by Frontiers in Big Data conceptual-analysis paper
 - Verdict: **VERIFIED**
-- Notes: Consistent order-of-magnitude agreement across five independently-published sources spanning industry analysts, business press, and a named-CEO interview. No adjustment needed.
 
-## Updated Claims (supersede research_context.md originals)
-1. **SKP-002 → OUTDATED, superseded.** Draft must not state "zero benchmarks published" as current fact; use: "Alibaba's July 19 preview shipped without benchmark data, but the August 3 full release included a self-reported comparison table."
-2. **SKP-010 → refined.** Scope censorship-persistence claim to documented Qwen/DeepSeek findings (Tiananmen exception under local deployment); do not generalize to "all Chinese models."
-3. **SKP-009 → refined + upgraded source.** Scope to Qwen3-Coder specifically (not Qwen3.8-Max); cite Booz Allen's own release, not Fox News, as primary attribution.
-4. **ADV-10 → upgraded, now usable.** May be attributed to OpenAI directly: "OpenAI has said GPT-5.3-Codex was instrumental in creating itself."
+### VQ-5: SKP-201 (neuroweapons technology immaturity)
+- Claim: 2008 assessment found neuroweapons "not sufficiently mature for operational employment."
+- Verification Source: NDU Press PRISM 8(3), DeFranco/DiEuliis/Giordano, "Redefining Neuroweapons"
+- Verdict: **VERIFIED**
+
+### VQ-6: SKP-202 ("nonlethal neuroweapon" as technically unrealistic)
+- Claim: Bulletin of the Atomic Scientists rejects idealized nonlethal neuroweapons as unrealistic.
+- Verification Source: thebulletin.org/2016/10/when-neuroscience-leads-to-neuroweapons/
+- Verdict: **VERIFIED**
+
+### VQ-7: SKP-203 (neuroscience as dual-use, complicating a distinct weapons category)
+- Claim: Baker Institute analysis concedes neuroscience is dual-use.
+- Verification Source: bakerinstitute.org, "From Neuroweapons to 'Neuroshields'" (Eyre et al., Aug 2023)
+- Verdict: **VERIFIED**
+
+### VQ-8: ADV-501 (1969 tobacco "doubt is our product" memo)
+- Claim: Brown & Williamson internal memo, "Doubt is our product..."
+- Verification Source: phcppros.com; Doubt Is Their Product (Michaels) scholarship; multiple corroborating summaries
+- Verdict: **VERIFIED**
+
+### VQ-9: ADV-502 (UCS Disinformation Playbook five-tactic pattern)
+- Claim: Five-tactic pattern (fake experts, magnify uncertainty, manufacture doubt, appeal to emotion, attack alternatives) across tobacco/climate controversies.
+- Verification Source: ucs.org/resources/disinformation-playbook
+- Verdict: **VERIFIED** — search corroborated the playbook's existence and a repeatable multi-tactic structure, but returned overlapping-but-not-identical tactic labels ("counterfeiting science," "manufacturing uncertainty," "buying credibility") from secondary summaries rather than confirming all five original labels verbatim. **Note for drafting:** describe the pattern generically ("a recurring multi-tactic playbook — fake experts, manufactured doubt, and attacks on credible alternatives") rather than asserting a fixed canonical five-item list with confident verbatim labels.
+
+### VQ-10: ADV-503 (fossil-fuel lobbyist front groups)
+- Claim: Senior fossil-fuel lobbyist secretly ran a dozen+ front groups against climate science/policy.
+- Verification Source: ucs.org, "How Fossil Fuel Lobbyists Used 'Astroturf' Front Groups to Confuse the Public" — identifies the Western States Petroleum Association's top lobbyist running 12+ front groups (e.g., "California Drivers Alliance")
+- Verdict: **VERIFIED**
+
+### VQ-11: ADV-504 (Brennan Center — coordinated disinformation/harassment against election officials; RNC 2024 report)
+- Claim: Sustained coordinated disinformation/harassment against U.S. election officials; RNC report proposing organized contestation of 2024 election legitimacy.
+- Verification Source: brennancenter.org, "The Election Deniers' Playbook for 2024" and "Election Officials Under Attack"
+- Verdict: **VERIFIED** — Brennan Center documents 14 tactics and survey data (45% of surveyed officials feared for colleagues' safety; 38% reported harassment/abuse/threats).
+
+### VQ-12: SKP-501 (systematic review, 82 studies, limited causal effects of influence operations)
+- Claim: Princeton ESOC/Carnegie systematic review of 82 studies (1995–2020) finds limited evidence of belief/behavior change from influence operations.
+- Verification Source: carnegieendowment.org, "Measuring the Effects of Influence Operations" (Courchesne, Shapiro, Thange)
+- Verdict: **VERIFIED**
+
+### VQ-13: SKP-502 (2023 PLOS One replication — no backfire effect for vaccine misinformation corrections)
+- Claim: 2023 replication found no backfire effect; myths-vs-facts correction reduced misconceptions.
+- Verification Source: journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0281140 (Ecker, Sharkey, Swire-Thompson)
+- Verdict: **VERIFIED**
+
+### VQ-14: SKP-503 (RAND — disinformation effects poorly measured/understood)
+- Claim: RAND notes persistent measurement uncertainty; social-media influence-op effectiveness at scale is unclear.
+- Verification Source: rand.org/pubs/research_reports/RR4373z1.html
+- Verdict: **VERIFIED**
+
+### VQ-15: ADV-701 (Fricker's testimonial/hermeneutical injustice framework)
+- Claim: Fricker (2007) distinguishes testimonial injustice (credibility deflation via prejudice) from hermeneutical injustice (structural interpretive gaps).
+- Verification Source: en.wikipedia.org/wiki/Epistemic_injustice; ndpr.nd.edu review of *Epistemic Injustice: Power and the Ethics of Knowing*
+- Verdict: **VERIFIED**
+
+### VQ-16: ADV-702 (Episteme journal — Frickerian accounts and decoloniality)
+- Claim: Cambridge's *Episteme* published peer-reviewed scholarship examining whether Frickerian accounts can promote decoloniality.
+- Verification Source: cambridge.org/core/journals/episteme (Ranjoo Seodu Herr, 2025)
+- Verdict: **VERIFIED** (article exists and examines exactly this question — see ADV-703 update above for its conclusion)
+
+### VQ-17: ADV-703 (Fricker's framework extended toward decolonial concerns)
+- Claim: Scholarship extends/adapts Fricker's Global-North-centered framework toward transnational decolonial concerns.
+- Verification Source: cambridge.org/core/journals/episteme (Herr, 2025)
+- Verdict: **VERIFIED-UPDATED** — see "Updated Claims" above. The paper's actual conclusion is negative (FAEJ cannot promote decoloniality), not a successful extension.
+
+### VQ-18: SKP-701 (epistemic polarization/factual relativism, misinformation researchers targeted)
+- Claim: Political-communication scholarship documents delegitimization of knowledge institutions and misinformation researchers, and citizens pushed toward "facts are relative" belief.
+- Verification Source: tandfonline.com/doi/full/10.1080/10584609.2025.2514595, *Political Communication* Vol 42(5), 2025
+- Verdict: **VERIFIED**
+
+### VQ-19: SKP-702 (epistemic populism and factual relativism experiment)
+- Claim: Exposure to populist "common sense vs. expert" framing increases perceived factual relativism.
+- Verification Source: link.springer.com/chapter/10.1007/978-3-031-64178-7_2 (Hameleers)
+- Verdict: **VERIFIED-with-nuance** — the specific experimental chapter found exposure to populist communication did **not** significantly increase relativism in that study design, even though it undermines trust in expert knowledge more broadly. Counted as VERIFIED for the underlying claim (populist communication measurably erodes trust in expert knowledge), but @engineer should not overstate the "increases relativism" causal claim — the empirical picture here is mixed, not uniformly confirmatory.
 
 ## Unverifiable Claims
-None in this queue — all 8 verification passes reached a definitive verdict.
+None.
 
 ## Dispute Register
-See `dispute_register.md` (1 entry — below the 3-entry surfacing threshold; informational note only, does not block Approval Gate).
+No `[DISPUTED]` or `[OUTDATED]` findings this run. `dispute_register.md` is written empty/not-applicable per protocol (no entries to escalate).

@@ -1,31 +1,62 @@
 # Research Context Summary
 
 ## Thesis
-Chinese open-weight frontier models now offer real, verified cost and flexibility advantages over US closed-source models, but that flexibility carries embedded governance/security dependencies, while US labs retain a widening raw-compute moat — leaving the AI market's future genuinely divided between commoditizing pressure and scaling velocity.
+Cognitive warfare (targeting individual cognition/behavior/neurotechnology) and epistemic warfare (targeting the institutions and knowledge systems that establish societal truth) are distinct but mutually reinforcing dimensions of contested cognition, requiring conceptual precision and a policy shift toward cognitive liberty, epistemic security, and resilient socio-technical/institutional systems.
 
 ## Confirmed Claims (CORROBORATED / UNCONTESTED)
-- ADV-1/ADV-2 (T1/T2): Qwen3.8-Max is real — 2.4T-param MoE, 95B active/token, 1M context, $2/$6 per M tokens, launched Aug 3 2026; open weights promised, not yet published.
-- ADV-3 (T2): Qwen pricing runs ~5–15x cheaper than US closed frontier models on API basis.
-- ADV-6 (T2): UBS: Chinese models cost 15–20% of top-tier US products; enterprise adoption 0%→4% (Oct 2025–Mar 2026); DeepSeek token share <1%→17% in one month on one platform.
-- ADV-9 (T1/T2): US 2026 AI capex: $660–690B (Big 5 hyperscalers); OpenAI $1.4T+ commitments; Anthropic multi-billion AMD/xAI compute deals.
-- SKP-008 (T2, HIGH): China's National Intelligence Law (2017) obligates cooperation with state intelligence — Western DPAs cannot override this.
-- SKP-010 (T2, HIGH): Peer-reviewed evidence of embedded political censorship (Taiwan/Tiananmen/Xinjiang) persisting in Chinese model weights even when self-hosted outside China.
-- SKP-015/016 (T2): US frontier labs growing compute ~4x/year; absent chip exports, US compute capacity would be >10x China's in 2026.
-- Hardware: China deliberately shifting to Huawei Ascend (DeepSeek V4, GLM-5 built for it); Huawei targeting 600K–750K chips in 2026 — but SKP-013/014 (T3): Ascend still ~2 years behind Nvidia; CANN not yet CUDA-competitive.
+- ADV-101 (T1): NATO ACT formally defines Cognitive Warfare as targeting cognition itself, distinct from classic info warfare/PSYOPS.
+- ADV-104 (T1): Foundational NATO doctrine paper has buy-in from 20+ member nations/commands/academia/industry.
+- ADV-203 (T1/T2): Cognitive-bias exploitation (confirmation bias, anchoring, narrative coherence) is the identified individual-level targeting mechanism.
+- ADV-301 (T1): CETaS/Demos define epistemic security structurally — "healthy information pipelines" — not content-moderation.
+- ADV-303 (T1): Philosophy-of-science literature (Magnani) distinguishes epistemic warfare (targeting knowledge-validation systems) from information warfare (message content).
+- ADV-401/ADV-402/ADV-403 (T1): No settled international-law consensus that disinformation/cognitive ops trigger armed-conflict thresholds; ICRC and EJIL:Talk! confirm the legal gap.
+- ADV-501 (T1/T2): 1969 tobacco memo establishes the historical template for institutional manufactured-doubt campaigns.
+- ADV-504 (T2): Brennan Center documents sustained coordinated disinformation/harassment against U.S. election officials.
+- ADV-601 (T1): Chile's 2021 constitutional neurorights + 2023 Supreme Court brain-data ruling is real, binding precedent.
+- ADV-602 (T1): UNESCO's Nov 2025 neurotechnology-ethics standard adopted by 194 member states.
+- ADV-701/ADV-702 (T1): Fricker's testimonial/hermeneutical injustice framework, with peer-reviewed decolonial extension in Episteme.
+- SKP-501 (T1): Systematic review of 82 studies finds limited evidence influence operations change strongly-held beliefs/behavior.
+- SKP-502 (T1): 2023 replication study fails to reproduce the "backfire effect" for vaccine misinformation corrections.
+- SKP-402 (T1): Copenhagen School securitization theory — security framing curtails civil liberties/concentrates authority independent of underlying severity.
 
 ## Contested Claims (CONFLICTING / WEAKENED)
-- C-1 (Cost, MEDIUM conf.): ADV-3/ADV-6 (cheap API pricing) vs. SKP-005/006/007 (self-hosting TCO underestimated 3–5x; only cheaper at high utilization/scale).
-- C-2 (Enterprise risk vs. flexibility, HIGH conf. — thesis crux): ADV-4/6/7 (Apache 2.0 flexibility, growing adoption, "not inherently dangerous") vs. SKP-008/009/010/011/012 (NIL data exposure, Booz Allen code-vulnerability findings, embedded censorship travels with weights, lawmaker scrutiny).
-- C-3 (Commoditization scope, MEDIUM conf.): ADV-8 (Atlantic Council: real capability gap) vs. SKP-017/018/019/020 (moats persist in distribution/integration/compute; adoption concentrated in cost-sensitive startups, not regulated enterprise; ~10% self-hosted share projected by 2027).
-- Vector 1/3 (benchmarks, WEAKENED): ADV-5's mixed benchmark wins/losses are self-reported by Alibaba, not independently verified (SKP-001–004).
+- C-1: ADV-101–104 vs SKP-101–104 — is cognitive warfare a coherent new doctrinal domain or relabeled political warfare? [Definitional/Interpretive, HIGH confidence]
+- C-2: ADV-301–303 vs SKP-301–303 — is "epistemic security" politically neutral or a site of power contestation? [Interpretive/Normative, MEDIUM-HIGH]
+- C-3: ADV-401–404 vs SKP-402–403 — does "warfare" framing of civilian epistemic problems undermine the thesis's own pluralism goal? [Interpretive, HIGH — logical vulnerability internal to thesis]
+- C-4: ADV-601–604 vs SKP-601–603 — is Chile's neurorights reform a validated template or contested/redundant experiment? [Empirical/Methodological, HIGH]
+- WEAKENED (Vector 2): ADV-201–204 (neurocognitive targeting doctrine) vs SKP-201–203 (neuroweapon capability immaturity, dual-use complication) — bias-exploitation mechanism stands; neuroweapon operational-capability claim narrowed.
+- WEAKENED (Vector 5): ADV-502–504 (institutional targeting tactics/history) vs SKP-501–503 (limited empirical evidence campaigns change beliefs at scale) — tactics/history uncontested; effectiveness claim narrowed.
+- WEAKENED (Vector 7): ADV-701–703 (epistemic injustice/decolonial framework) vs SKP-701–702 (risk that indiscriminate application converges with populist relativism) — framework stands; application caveat required.
 
 ## Knowledge Gaps (INSUFFICIENT)
-None — all 7 vectors returned adequate evidence both sides (KC-6 pass).
+None. All 7 vectors reached sufficiency on both streams (KC-6 PASS).
 
 ## Source Inventory
-T1: Bloomberg | T1/T2: Futurum Group | T2: MarkTechPost, Developers Digest, BenchLM.ai, VentureBeat, Neowin, TechCrunch, Atlantic Council, Fortune, DataCenterDynamics, arXiv (x2), Fox News, PMC, PoPETS 2025, CEIAS, Epoch AI, AEI, Rest of World, Tech Startups, BigGo Finance | T3: Digital Applied, TechTimes, Azumo, GMI Cloud, Tech-Insider/Convequity, ChinaTalk, MindCast AI, Wikipedia (background)
-
-## Editorial Flags Carried Forward
-1. `[BREAKING-UNVERIFIED]` Qwen3.8-Max open-weight release date/license — unconfirmed as of Aug 3 2026.
-2. `[QUOTE-UNVERIFIED]` ADV-10 "instrumental in creating itself" — exclude as direct quote.
-3. Re-verify SKP-002's "zero benchmarks published" claim against Alibaba's latest release notes — may be stale within hours.
+| Tier | Author/Org | Domain |
+|---|---|---|
+| T1 | NATO Allied Command Transformation | act.nato.int, innovationhub-act.org |
+| T1 | Frontiers (Big Data, AI, Psychology) | frontiersin.org |
+| T1 | ICRC | blogs.icrc.org |
+| T1 | EJIL:Talk! | ejiltalk.org |
+| T1 | Cambridge/Elgar law journals | cambridge.org, elgaronline.com |
+| T1 | Taylor & Francis (Cogent Legal, Political Communication) | tandfonline.com |
+| T1 | CETaS / Alan Turing Institute / Demos | cetas.turing.ac.uk, demos.co.uk |
+| T1 | Springer (Magnani; Neuroethics journal) | link.springer.com |
+| T1 | Cambridge Episteme | cambridge.org |
+| T1 | European Parliament | europarl.europa.eu |
+| T1 | PMC/NCBI peer-reviewed | ncbi.nlm.nih.gov, pmc.ncbi.nlm.nih.gov |
+| T1 | PLOS One | journals.plos.org |
+| T1 | Carnegie Endowment / Princeton ESOC | carnegieendowment.org, esoc.princeton.edu |
+| T1 | RAND Corporation | rand.org |
+| T1 | Security Dialogue (Oxford) | academic.oup.com |
+| T1 | European Journal of International Security (Cambridge) | cambridge.org |
+| T1 | JMIR | jmir.org |
+| T2 | Small Wars Journal | smallwarsjournal.com |
+| T2 | Irregular Warfare Initiative | irregularwarfare.org |
+| T2 | ETH Zurich CSS | css.ethz.ch |
+| T2 | Bulletin of the Atomic Scientists | thebulletin.org |
+| T2 | Baker Institute | bakerinstitute.org |
+| T2 | NATO Association of Canada | natoassociation.ca |
+| T2 | Brennan Center for Justice | brennancenter.org |
+| T2 | Union of Concerned Scientists | ucs.org |
+| T3 | The Philosophical Salon | thephilosophicalsalon.com (corroborated by T1 sources on same conflict) |

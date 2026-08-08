@@ -1,29 +1,31 @@
 {
-  "schema_version": 1,
   "gate": "APPROVAL",
-  "decided_at": "2026-08-03T00:00:00Z",
   "decision": "approved",
   "conflicts": [
     {
       "id": "C-1",
-      "vector": "Cost Economics",
+      "topic": "Is \"cognitive warfare\" a coherent doctrinal category, or incoherent relabeling?",
       "handling": "neutral",
-      "position": null,
-      "note": "Present API price advantage as corroborated, immediately scoped by self-hosting TCO caveat."
+      "position": null
     },
     {
       "id": "C-2",
-      "vector": "Enterprise Risk vs. Architectural Flexibility",
+      "topic": "Is \"epistemic security\" a neutral protective concept, or a site of power contestation?",
       "handling": "neutral",
-      "position": null,
-      "note": "Article's central tension. Present both; do not resolve in the article's voice."
+      "position": null
     },
     {
       "id": "C-3",
-      "vector": "Scope of Commoditization",
+      "topic": "Does \"warfare\" framing of epistemic problems undermine the thesis's own pluralism goal?",
+      "handling": "unresolved",
+      "position": null
+    },
+    {
+      "id": "C-4",
+      "topic": "Is Chile's neurorights reform a validated template, or a contested first experiment?",
       "handling": "neutral",
-      "position": null,
-      "note": "Preserve as the article's open concluding question, matching thesis's own 'divided future' framing."
+      "position": null
     }
-  ]
+  ],
+  "note": "No conflicts individually specified by user at Approval Gate; defaulting all to (a) present both neutrally per pipeline default, except C-3 which the conflict_register.md explicitly recommended flagging as unresolved given its internal-logical-vulnerability status — applied here since neutral presentation would understate that this tension is unresolved by design, not just under-evidenced."
 }

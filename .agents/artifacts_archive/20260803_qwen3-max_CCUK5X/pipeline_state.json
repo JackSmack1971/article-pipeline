@@ -1,0 +1,109 @@
+{
+  "stage": "REVIEW_REQUIRED",
+  "phase_1_complete": true,
+  "postdraft": {
+    "red_team": {
+      "threat_level": "MEDIUM",
+      "decision": "address",
+      "revised_section": "A Divided Future / What Should Enterprises Actually Do?"
+    },
+    "reader_simulation": {
+      "accessibility_rating": "MOSTLY ACCESSIBLE",
+      "high_gaps": 3,
+      "decision": "polish",
+      "sections_revised": [
+        "The Qwen3.8-Max Moment",
+        "Are Qwen3.8-Max's Benchmarks Genuinely Competitive?",
+        "Can China's Chips Catch Up to Nvidia?"
+      ]
+    }
+  },
+  "draft": {
+    "sections_drafted": 8,
+    "consecutive_blocked_audits": 0,
+    "inline_audit_verdicts": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS_WITH_NOTES",
+      "PASS",
+      "PASS"
+    ],
+    "holistic_audit_verdict": "PASS",
+    "word_count": 2291
+  },
+  "delivery": {
+    "author_byline_decision": "deliver_without \u2014 E-E-A-T gap left for publisher to resolve",
+    "delivered_artifacts": [
+      "article_draft.md",
+      "seo_package.md",
+      "pipeline_metadata.md"
+    ]
+  },
+  "learning": {
+    "pipeline_learnings_entries": 4,
+    "knowledge_artifacts_written": [
+      ".agents/knowledge/article-pipeline/pitfall/article_20260803T000000Z.md",
+      ".agents/knowledge/article-pipeline/context/article_20260803T000000Z.md"
+    ],
+    "trace_id": "CCUK5X"
+  },
+  "artifacts_written": [
+    "pipeline_config.json",
+    "advocate_context.md",
+    "skeptic_evidence.md",
+    "research_context.md",
+    "article_spec.md",
+    "conflict_register.md",
+    "research_context_summary.md",
+    "fact_check_report.md",
+    "dispute_register.md",
+    "claims_for_drafting.md",
+    "conflict_decisions.json",
+    "pipeline_metadata.md",
+    "article_draft.md",
+    "audit_log.md",
+    "audit_report.md",
+    "red_team_report.md",
+    "reader_questions.md",
+    "seo_package.md",
+    "pipeline_learnings.md"
+  ],
+  "gate_history": [
+    {
+      "gate": "TRIAGE_THESIS_CONFIRM",
+      "thesis_confidence": "MEDIUM",
+      "decision": "confirmed"
+    },
+    {
+      "gate": "APPROVAL",
+      "revision_cycles": 0,
+      "conflict_decisions_file": "conflict_decisions.json",
+      "decision": "approved"
+    }
+  ],
+  "kc_events": [
+    {
+      "detail": "max single-source share 10%",
+      "code": "KC-3",
+      "status": "PASS"
+    },
+    {
+      "detail": "0/7 vectors INSUFFICIENT",
+      "code": "KC-6",
+      "status": "PASS"
+    }
+  ],
+  "gate_expedite_count": 0,
+  "consecutive_blocked_audits": 0,
+  "tool_degradation": [
+    "code_execution: false (matplotlib not installed) \u2014 VIZ candidates will be placeholder-only"
+  ],
+  "schema_version": 2,
+  "eeat": {
+    "status": "FAIL",
+    "reason": "Item 17 fails on one signal:\n\n- **Expertise (FAIL):** No author name or credential appears in the byline or first paragraph. The draft currently shows only a publish date (`*Published August 3, 2026*`) under the H1. **Minimum edit:** add an author byline with name and relevant credential/affiliation (e.g., \"By [Name], [title/beat]\") immediately below the publish date. This cannot be fabricated \u2014 requires editorial input on the actual author of record.\n- **Experience:** PASS \u2014 original synthesis across 22 sources with named primary/secondary sources and dates.\n- **Authoritativeness:** PASS \u2014 well above 3 phrase links to T1/T2 sources (Bloomberg, MarkTechPost, Booz Allen Hamilton, China Law Translate, Futurum Group, OpenAI, etc.), including \u22651 T1 primary source (China Law Translate's primary legal text; OpenAI's own release page).\n- **Trustworthiness:** PASS \u2014 no unattributed claims; all `[Unverified]`/uncertain claims carry explicit inline caveats (Qwen3.8-Max license status, self-reported benchmarks); no footnote block present.\n\n**Do not mark this article as distribution-ready until an author byline is added.**"
+  }
+}
