@@ -348,48 +348,26 @@ if contract_report is not None and proc.returncode == 1:
         implicated += [e for e in (contract_report.get("errors") or []) if "word-count mismatch" in e]
     implicated = list(dict.fromkeys(implicated))
 
-    # article_draft.md is the canonical source for word count — a mismatch
-    # here just means pipeline_state.json/pipeline_metadata.md/seo_package.md
-    # haven't been reconciled to this edit yet, which is the expected,
-    # momentary state between an "edit → sync-word-count" pair the pipeline's
-    # own protocol calls for (see multi-agent-article-pipeline/SKILL.md Step 5
-    # "polish" and Step 4 "address" responses). Auto-run the same sanctioned
-    # `pipeline_runner.py sync-word-count` reconciliation the pipeline would
-    # run next anyway, then re-validate, instead of rolling back a legitimate
-    # edit. Only word-count-mismatch may be auto-resolved this way; any other
-    # implicated error (missing artifact, structural corruption, etc.) still
-    # rolls back unconditionally, and pipeline_metadata.md keeps the original
-    # strict behavior since its word count is hand-authored prose, not
-    # derived from article_draft.md, so a mismatch there can be a genuine
-    # authoring error rather than staleness.
+    # article_draft.md is the canonical source for word count. During POSTDRAFT
+    # polish/address passes, the documented protocol intentionally has a
+    # momentary "edit → sync-word-count" state: the draft is edited first and
+    # the sanctioned pipeline_runner.py command reconciles derived artifacts
+    # immediately afterward. Defer only this one transient mismatch in that
+    # stage; do not run the sync from inside PostToolUse, because that would
+    # turn a validation hook into a second writer and could trigger nested
+    # artifact writes. Any other implicated error, and any mismatch outside
+    # POSTDRAFT, still rolls back unconditionally. pipeline_metadata.md keeps
+    # the original strict behavior since its word count is hand-authored prose.
     only_word_count_mismatch = bool(implicated) and all("word-count mismatch" in e for e in implicated)
+    state_stage = None
     if only_word_count_mismatch and rel == "article_draft.md":
-        runner = os.path.join(os.environ["SE_ROOT_DIR"], "scripts", "pipeline_runner.py")
-        sync_proc = subprocess.run(
-            [sys.executable, runner, "sync-word-count", "--artifact-root", artifact_root, "--json"],
-            capture_output=True, text=True, cwd=os.environ["SE_ROOT_DIR"],
-        )
-        recheck = subprocess.run(
-            [sys.executable, validator, "--artifact-root", artifact_root, "--json", "--skip-manifest-hash"],
-            capture_output=True, text=True, cwd=os.environ["SE_ROOT_DIR"],
-        )
         try:
-            recheck_report = json.loads(recheck.stdout)
-        except json.JSONDecodeError:
-            recheck_report = None
-        still_implicated = (
-            [e for e in (recheck_report.get("errors") or []) if "word-count mismatch" in e]
-            if recheck_report is not None else ["sync-word-count re-validation produced no parseable report"]
-        )
-        if sync_proc.returncode == 0 and recheck.returncode != 1 and not still_implicated:
-            log("post_write", "auto_synced_word_count", f"{rel}: {sync_proc.stdout.strip()[:200]}")
-        else:
-            fail(
-                "contract violation: " + "; ".join(implicated)
-                + f" (auto sync-word-count attempted, exit={sync_proc.returncode}, "
-                + "still failing: " + "; ".join(still_implicated or ["unknown"]) + ")"
-            )
-            sys.exit(0)
+            with open(state_file, encoding="utf-8") as fh:
+                state_stage = json.load(fh).get("stage")
+        except (OSError, json.JSONDecodeError, AttributeError):
+            state_stage = None
+    if only_word_count_mismatch and rel == "article_draft.md" and state_stage == "POSTDRAFT":
+        log("post_write", "deferred_word_count_sync", f"{rel}: stage={state_stage}")
     elif implicated:
         fail("contract violation: " + "; ".join(implicated))
         sys.exit(0)

@@ -21,6 +21,12 @@ after reading the actual scripts (`scripts/validate_artifacts.py`, `scripts/pipe
 | State-file Bash shield | `PreToolUse` | `Bash` | Denies any Bash command that mentions `pipeline_state.json` unless it's a single, unchained `python scripts/pipeline_runner.py ...` invocation |
 | Artifact write validator | `PostToolUse` | `Write\|Edit` | Invoked via `scripts/enforce_artifact_contract.sh post-write`, a pass-through to `state_enforcer.sh post-write` (see §5). Checks the just-written `.agents/artifacts/*.md` file for emptiness / NUL bytes / >80% truncation vs. its pre-write backup, then runs a targeted slice of `validate_artifacts.py` (manifest hash comparison skipped) and rolls back if a reported error names this file; restores the backup (or deletes, if none existed) and reports the failure back to the model on any check failure |
 
+During `POSTDRAFT`, a word-count mismatch caused solely by an `article_draft.md`
+edit is the expected transient state between the documented edit and the
+sanctioned `pipeline_runner.py sync-word-count` call. The validator defers only
+that mismatch without writing derived artifacts itself; all other errors, and
+the same mismatch outside `POSTDRAFT`, retain rollback behavior.
+
 All four log structured JSON telemetry (`ts`, `mode`, `event`, `outcome`, `latency_ms`, `detail`)
 to `.agents/.state_enforcer/telemetry.jsonl`. No `jq` is installed on this machine, so all JSON
 parsing is done in Python (already a hard dependency of this repo) rather than hand-rolled bash
